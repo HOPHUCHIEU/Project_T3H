@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const isHomePage = location.pathname === '/'
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,18 +17,12 @@ const Header = () => {
     }
     window.addEventListener('scroll', handleScroll)
     
-    const token = localStorage.getItem('userToken')
-    setIsLoggedIn(!!token)
-
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
-
   const handleLogout = () => {
-    localStorage.removeItem('userToken')
-    localStorage.removeItem('userData')
-    setIsLoggedIn(false)
+    logout();
     navigate('/login')
   }
 
@@ -90,50 +85,77 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-center space-x-4">
-          <button   className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-colors">
+          <button className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-colors">
             <a href="#booking">Đặt bàn</a>
           </button>
-
-          {isLoggedIn ? (
+          {user ? (
             <div className="relative">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center space-x-2"
+                className="flex items-center px-6 py-2 rounded-full bg-white text-gray-800 border border-gray-200"
               >
-                <img
-                  src="https://ui-avatars.com/api/?name=User&background=random"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-white"
-                />
+                <div className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center mr-2">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.username} className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <span className="text-sm">{user.username.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <span className="font-medium">
+                  {user.username}
+                </span>
+                <svg className="w-4 h-4 ml-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
 
-              <AnimatePresence>
-                {isMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      Thông tin cá nhân
-                    </Link>
-                    <Link to="/bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      Lịch đặt bàn
-                    </Link>
-                    <Link to="/payments" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      Thanh toán
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                    >
-                      Đăng xuất
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/users"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    Quản lý người dùng
+                  </Link>
+                  <Link
+                    to="/menu"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Quản lý thực đơn
+                  </Link>
+                  <div className="border-t border-gray-100"></div>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button

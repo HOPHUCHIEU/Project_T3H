@@ -21,29 +21,36 @@ const LoginPage = () => {
     e.preventDefault()
     setError('')
 
-    try {
+    try {      
       await login(email, password)
-      toast.success('Đăng nhập thành công!', {
+      toast.success('🎉 Đăng nhập thành công! Chào mừng bạn trở lại.', {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 9000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
+        progress: undefined,
         draggable: true,
+        theme: "light",
+        transition: "Bounce",
       })
+      // Chờ toast hiển thị xong mới chuyển trang
       setTimeout(() => {
         navigate('/')
-      }, 1000)
-    } catch (err) {
-      toast.error('Tên đăng nhập hoặc mật khẩu không đúng!', {
+      }, 5000)
+    } catch (err) {      
+      toast.error('❌ Tên đăng nhập hoặc mật khẩu không đúng!', {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 9000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        progress: undefined,
+        transition: "Bounce",
+        theme: "light",
       })
-      setError('Đăng nhập không thành công')
+      setError('')
       console.error('Login error:', err)
     }
   }

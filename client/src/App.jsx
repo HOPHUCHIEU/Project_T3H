@@ -15,6 +15,9 @@ import Contact from "./page/Contact";
 import Profile from "./page/Profile";
 import Bookings from "./page/Bookings";
 import Payments from "./page/Payments";
+import DashboardPage from "./page/DashboardPage";
+import UserManagementPage from "./page/UserManagementPage";
+import MenuManagementPage from "./page/MenuManagementPage";
 import { AuthProvider } from "./context/AuthContext";
 
 function PageWrapper({ children }) {
@@ -77,6 +80,36 @@ function App() {
     {
       path: "/signup",
       element: <PageWrapper><SignUpPage /></PageWrapper>,
+    },
+    {
+      path: "/dashboard",
+      element: (
+        <PageWrapper>
+          <ProtectedRoute adminOnly={true}>
+            <DashboardPage />
+          </ProtectedRoute>
+        </PageWrapper>
+      ),
+    },
+    {
+      path: "/users",
+      element: (
+        <PageWrapper>
+          <ProtectedRoute adminOnly={true}>
+            <UserManagementPage />
+          </ProtectedRoute>
+        </PageWrapper>
+      ),
+    },
+    {
+      path: "/menu",
+      element: (
+        <PageWrapper>
+          <ProtectedRoute adminOnly={true}>
+            <MenuManagementPage />
+          </ProtectedRoute>
+        </PageWrapper>
+      ),
     },
     {
       path: "*",
