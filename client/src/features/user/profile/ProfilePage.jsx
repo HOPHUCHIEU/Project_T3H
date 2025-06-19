@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
+import Header from '../../../components/common/Header';
 
 const Profile = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');

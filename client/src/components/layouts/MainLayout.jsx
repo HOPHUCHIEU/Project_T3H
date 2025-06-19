@@ -1,8 +1,7 @@
 import React from "react";
-import Header from "../components/Header";
-import { NavLink, Outlet } from "react-router-dom";
+import Header from "../common/Header";
 
-const MainLayout = () => {
+const MainLayout = ({ children }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -69,9 +68,8 @@ const MainLayout = () => {
               </li>
             </ul>
           </div>
-        </aside>
-        <main className="col-span-9 h-full py-4 px-3">
-          <Outlet />
+        </aside>        <main className="col-span-9 h-full py-4 px-3">
+          {children}
         </main>
       </div>
     </>

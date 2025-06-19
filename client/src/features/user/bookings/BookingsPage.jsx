@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
+import Header from '../../../components/common/Header';
+// import MainLayout from '../../../components/layouts/MainLayout';
 
-const Bookings = () => {
+const BookingsPage = () => {
   // Giả lập dữ liệu đặt bàn
   const bookings = [
     {
@@ -85,4 +86,4 @@ const Bookings = () => {
   );
 };
 
-export default Bookings;
+export default BookingsPage;
