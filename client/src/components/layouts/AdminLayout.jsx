@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Header from '../Header';
+import { MdDashboard, MdPeople, MdEventNote } from 'react-icons/md';
 
 const AdminLayout = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { user, logout, loading } = useAuth();
+  const [isExpanded, setIsExpanded] = useState(true);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
 
   if (loading) {
     return <div className="p-8 text-center text-gray-600">Đang tải thông tin người dùng...</div>;
   }
 
-  if (!user || user.role !== 'admin') {
+  if (user && user.role !== 'admin') {
     return (
       <div className="p-8 text-center text-red-600">
         Bạn không có quyền truy cập trang quản trị.
@@ -18,54 +27,46 @@ const AdminLayout = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-600">Xin chào, {user.username}</span>
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Đăng xuất
-            </button>
-          </div>
-        </div>
-      </header>
+  if (!user) return null;
 
-      {/* Layout */}
-      <div className="flex">
+  return (
+    <div className="h-screen overflow-hidden flex flex-col bg-gray-100">
+      {/* Header */}
+      <div className="h-20 flex-shrink-0">
+        <Header />
+      </div>
+
+      {/* Layout body (Sidebar + Main) */}
+      <div className="flex flex-1 h-[calc(100vh-80px)]"> {/* 80px = h-20 header */}
         {/* Sidebar */}
         <aside
-          className={`h-screen bg-white shadow-lg transition-all duration-300 ${
+          className={`bg-white shadow-lg transition-all duration-300 overflow-hidden ${
             isExpanded ? 'w-64' : 'w-20'
           }`}
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => setIsExpanded(false)}
         >
           <nav className="p-4">
-            <ul className="space-y-2">
-              <SidebarItem to="/admin/dashboard" label="Dashboard" isExpanded={isExpanded} />
-              <SidebarItem to="/admin/users" label="Users" isExpanded={isExpanded} />
-              <SidebarItem to="/admin/appointments" label="Appointments" isExpanded={isExpanded} />
+            <ul className="space-y-3">
+              <SidebarItem to="/admin/dashboard" label="Dashboard" icon={MdDashboard} isExpanded={isExpanded} />
+              <SidebarItem to="/admin/users" label="Users" icon={MdPeople} isExpanded={isExpanded} />
+              <SidebarItem to="/admin/appointments" label="Appointments" icon={MdEventNote} isExpanded={isExpanded} />
             </ul>
           </nav>
         </aside>
 
-        {/* Main */}
-        <main className="flex-1 p-8">
-          <Outlet />
+        {/* Main content */}
+        <main className="flex-1 p-6 overflow-hidden">
+          <div className="h-full w-full">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
   );
 };
 
-// Sidebar item component
-const SidebarItem = ({ to, label, isExpanded }) => (
+const SidebarItem = ({ to, label, icon: Icon, isExpanded }) => (
   <li>
     <NavLink
       to={to}
@@ -75,13 +76,10 @@ const SidebarItem = ({ to, label, isExpanded }) => (
         }`
       }
     >
-      <div className="w-6 h-6 mr-2 text-gray-500">
-        {/* Icon placeholder */}
-        <span className="block w-2 h-2 bg-gray-500 rounded-full" />
+      <div className="w-6 h-6 mr-2 text-xl text-gray-500">
+        {Icon && <Icon />}
       </div>
-      <span
-        className={`ml-1 ${!isExpanded && 'opacity-0'} transition-opacity duration-300`}
-      >
+      <span className={`ml-1 ${!isExpanded && 'opacity-0'} transition-opacity duration-300`}>
         {label}
       </span>
     </NavLink>
