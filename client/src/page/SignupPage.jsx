@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../context/AuthContext';
@@ -104,6 +104,12 @@ const SignupPage = () => {
           >
             Đăng Ký
           </button>
+          <div className="mt-4 text-center text-sm">
+            <span className="text-gray-600">Đã có tài khoản? </span>
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Đăng nhập
+            </Link>
+          </div>
         </form>
       </div>
     </div>

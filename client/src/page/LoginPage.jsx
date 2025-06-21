@@ -98,8 +98,7 @@ const LoginPage = () => {
           >
             Đăng nhập
           </button>
-          <div className="mt-4 flex items-center justify-between text-sm">
-            <Link to="/register" className="text-blue-600 hover:underline">
+          <div className="mt-4 flex items-center justify-between text-sm">            <Link to="/signup" className="text-blue-600 hover:underline">
               Chưa có tài khoản?
             </Link>
             <Link to="/forgot-password" className="text-blue-600 hover:underline">

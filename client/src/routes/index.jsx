@@ -7,8 +7,9 @@ import BookingsPage from '../features/user/bookings/BookingsPage';
 import LoginPage from '../page/LoginPage';
 import SignupPage from '../page/SignupPage';
 import HomePage from '../page/HomePage';
-import NewsPage from '../features/news/NewsPage';
-import NewsDetail from '../features/news/NewsDetail';
+import AboutPage from '../page/AboutPage';
+import Contact from '../page/Contact';
+import Service from '../page/Service';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 
 import AdminLayout from '../components/layouts/AdminLayout';
@@ -51,6 +52,18 @@ const routes = [
         element: <UserManagementPage />
       }
     ]
+  },
+  {
+    path: '/service',
+    element: <Service />
+  },
+  {
+    path: '/about',
+    element: <AboutPage />
+  },
+  {
+    path: '/contact',
+    element: <Contact />
   },
   {
     path: '*',
