@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/common/Header";
 import { Outlet } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -238,8 +239,11 @@ const HomePage = () => {
         </div>
       </section>
       <Outlet />
+      <Footer />
     </div>
+    
   );
+  
 };
 
 export default HomePage;

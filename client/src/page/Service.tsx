@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 const Service = () => {
   useEffect(() => {
@@ -172,6 +173,7 @@ const Service = () => {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   )
 }

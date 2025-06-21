@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Header from "../components/Header";
+import Footer from '../components/Footer';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -182,6 +183,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

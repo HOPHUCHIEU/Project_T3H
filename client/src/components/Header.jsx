@@ -95,9 +95,11 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-center space-x-4">
-          <button className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-colors">
-            <a href="#booking">Đặt bàn</a>
-          </button>
+          {(!user || user.role !== "admin") && (
+            <button className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-colors">
+              <a href="#booking">Đặt bàn</a>
+            </button>
+          )}
           {user ? (
             <div className="relative">
               <button
