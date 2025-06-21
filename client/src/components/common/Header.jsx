@@ -115,7 +115,7 @@ const Header = () => {
                   {user.role === "admin" ? (
                     <>
                       <Link
-                        to="/dashboard"
+                        to="/admin/dashboard"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsMenuOpen(false)}
                       >

@@ -164,6 +164,7 @@ export class UserService {
     const token = this.jwtService.sign({
       id: user._id,
       email: user.email,
+      role: user.role,
     });
 
     return {
@@ -171,6 +172,7 @@ export class UserService {
         id: user._id,
         email: user.email,
         username: user.username,
+        role: user.role,
       },
       token,
     };

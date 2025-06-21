@@ -11,9 +11,14 @@ const LoginPage = () => {
   const navigate = useNavigate()
   const { login, user } = useAuth()
 
+  // ✅ Điều hướng sau khi user được set (tức là đăng nhập thành công)
   useEffect(() => {
     if (user) {
-      navigate('/')
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard')
+      } else {
+        navigate('/')
+      }
     }
   }, [user, navigate])
 
@@ -21,34 +26,26 @@ const LoginPage = () => {
     e.preventDefault()
     setError('')
 
-    try {      
+    try {
       await login(email, password)
-      toast.success('🎉 Đăng nhập thành công! Chào mừng bạn trở lại.', {
-        position: "top-right",
-        autoClose: 9000,
+      toast.success('🎉 Đăng nhập thành công!', {
+        position: 'top-right',
+        autoClose: 1500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
-        progress: undefined,
-        draggable: true,
-        theme: "light",
-        transition: "Bounce",
+        theme: 'light',
+        transition: 'Bounce',
       })
-      // Chờ toast hiển thị xong mới chuyển trang
-      setTimeout(() => {
-        navigate('/')
-      }, 5000)
-    } catch (err) {      
+    } catch (err) {
       toast.error('❌ Tên đăng nhập hoặc mật khẩu không đúng!', {
-        position: "top-right",
-        autoClose: 9000,
+        position: 'top-right',
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        transition: "Bounce",
-        theme: "light",
+        theme: 'light',
+        transition: 'Bounce',
       })
       setError('')
       console.error('Login error:', err)
@@ -59,22 +56,22 @@ const LoginPage = () => {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <ToastContainer />
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
-        <h1 className="mb-8 text-center text-3xl font-bold text-gray-700">
-          Đăng Nhập
-        </h1>
+        <h1 className="mb-8 text-center text-3xl font-bold text-gray-700">Đăng Nhập</h1>
+
         {error && (
-          <div className="mb-4 rounded-md bg-red-100 p-3 text-red-700">
-            {error}
-          </div>
+          <div className="mb-4 rounded-md bg-red-100 p-3 text-red-700">{error}</div>
         )}
+
         <div className="mb-6 text-center text-gray-600">
           <p>Đăng nhập bằng tài khoản của bạn</p>
         </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="text-sm text-gray-600">Tên đăng nhập</label>
             <input
-              type="text"              value={email}
+              type="text"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email"
               className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
@@ -98,7 +95,8 @@ const LoginPage = () => {
           >
             Đăng nhập
           </button>
-          <div className="mt-4 flex items-center justify-between text-sm">            <Link to="/signup" className="text-blue-600 hover:underline">
+          <div className="mt-4 flex items-center justify-between text-sm">
+            <Link to="/signup" className="text-blue-600 hover:underline">
               Chưa có tài khoản?
             </Link>
             <Link to="/forgot-password" className="text-blue-600 hover:underline">

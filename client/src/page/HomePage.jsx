@@ -11,9 +11,10 @@ const HomePage = () => {
   useEffect(() => {
     // SEO Meta Tags
     document.title = "Luxury Buffet | Nhà hàng Buffet cao cấp";
-    const metaDescription = document.createElement('meta');
+    const metaDescription = document.createElement("meta");
     metaDescription.name = "description";
-    metaDescription.content = "Đặt bàn tại Luxury Buffet - Trải nghiệm ẩm thực buffet cao cấp với hơn 200+ món ăn. Không gian sang trọng, dịch vụ 5 sao.";
+    metaDescription.content =
+      "Đặt bàn tại Luxury Buffet - Trải nghiệm ẩm thực buffet cao cấp với hơn 200+ món ăn. Không gian sang trọng, dịch vụ 5 sao.";
     document.head.appendChild(metaDescription);
 
     return () => {
@@ -30,7 +31,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      {/* Hero Section */ }
+      {/* Hero Section */}
       <div className="relative h-screen">
         <div className="absolute inset-0">
           <img
@@ -48,7 +49,7 @@ const HomePage = () => {
             transition={{ duration: 1 }}
             className="text-center space-y-8"
           >
-            <motion.h1 
+            <motion.h1
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.8 }}
@@ -56,7 +57,7 @@ const HomePage = () => {
             >
               Luxury Buffet
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -75,14 +76,14 @@ const HomePage = () => {
           </motion.div>
         </div>
       </div>
-          <section className="py-20 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4">
-              <motion.div
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
-              >
+          >
             {[
               {
                 title: "200+ Món ăn",
@@ -104,35 +105,35 @@ const HomePage = () => {
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ 
-              scale: 1.05,
-              rotate: [0, 2, -2, 0],
-              transition: {
-                rotate: {
-                  repeat: 0,
-                  duration: 0.5
-                }
-              }
+                whileHover={{
+                  scale: 1.05,
+                  rotate: [0, 2, -2, 0],
+                  transition: {
+                    rotate: {
+                      repeat: 0,
+                      duration: 0.5,
+                    },
+                  },
                 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 className="text-center p-6 bg-white rounded-lg shadow-lg cursor-pointer"
               >
-                <motion.div 
-              className="text-4xl mb-4"
-              whileHover={{ scale: 1.2, rotate: 360 }}
-              transition={{ duration: 0.5 }}
+                <motion.div
+                  className="text-4xl mb-4"
+                  whileHover={{ scale: 1.2, rotate: 360 }}
+                  transition={{ duration: 0.5 }}
                 >
-              {feature.icon}
+                  {feature.icon}
                 </motion.div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             ))}
-              </motion.div>
-            </div>
-          </section>
+          </motion.div>
+        </div>
+      </section>
 
-          {/* Booking Section */}
+      {/* Booking Section */}
       <section id="booking" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
@@ -171,13 +172,13 @@ const HomePage = () => {
                   </select>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-gray-700 mb-2">Số người</label>
                 <input
                   type="number"
                   min="1"
-                  max="20"f
+                  max="20"
                   value={guests}
                   onChange={(e) => setGuests(parseInt(e.target.value))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
@@ -199,7 +200,9 @@ const HomePage = () => {
       {/* Gallery Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Không gian sang trọng</h2>
+          <h2 className="text-4xl font-bold text-center mb-12">
+            Không gian sang trọng
+          </h2>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -7,11 +7,15 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (err) {
+        console.error('Failed to parse user from localStorage', err);
+      }
     }
     setLoading(false);
   }, []);
@@ -20,15 +24,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
+      if (!response.ok) throw new Error('Login failed');
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
@@ -45,15 +45,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
+      if (!response.ok) throw new Error('Registration failed');
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
@@ -72,15 +68,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const value = {
-    user,
-    login,
-    register,
-    logout,
-    loading
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
