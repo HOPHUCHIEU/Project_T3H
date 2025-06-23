@@ -1,33 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useAuth } from '../context/AuthContext'
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
-  const { login, user } = useAuth()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
 
-  // ✅ Điều hướng sau khi user được set (tức là đăng nhập thành công)
   useEffect(() => {
     if (user) {
       if (user.role === 'admin') {
-        navigate('/admin/dashboard')
+        navigate('/admin/dashboard');
       } else {
-        navigate('/')
+        navigate('/');
       }
     }
-  }, [user, navigate])
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
 
     try {
-      await login(email, password)
+      await login(email, password);
       toast.success('🎉 Đăng nhập thành công!', {
         position: 'top-right',
         autoClose: 1500,
@@ -35,8 +34,8 @@ const LoginPage = () => {
         closeOnClick: true,
         pauseOnHover: true,
         theme: 'light',
-        transition: 'Bounce',
-      })
+        transition: Bounce, // <-- Sửa lại
+      });
     } catch (err) {
       toast.error('❌ Tên đăng nhập hoặc mật khẩu không đúng!', {
         position: 'top-right',
@@ -45,27 +44,24 @@ const LoginPage = () => {
         closeOnClick: true,
         pauseOnHover: true,
         theme: 'light',
-        transition: 'Bounce',
-      })
-      setError('')
-      console.error('Login error:', err)
+        transition: Bounce, // <-- Sửa lại
+      });
+      setError('');
+      console.error('Login error:', err);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <ToastContainer />
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
         <h1 className="mb-8 text-center text-3xl font-bold text-gray-700">Đăng Nhập</h1>
-
         {error && (
           <div className="mb-4 rounded-md bg-red-100 p-3 text-red-700">{error}</div>
         )}
-
         <div className="mb-6 text-center text-gray-600">
           <p>Đăng nhập bằng tài khoản của bạn</p>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="text-sm text-gray-600">Tên đăng nhập</label>
@@ -106,7 +102,7 @@ const LoginPage = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

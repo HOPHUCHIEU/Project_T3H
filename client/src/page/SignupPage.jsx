@@ -44,7 +44,7 @@ const SignupPage = () => {
         pauseOnHover: true,
         draggable: true,
       });
-      setError('Đăng ký không thành công');
+      setError('');
       console.error('Registration error:', err);
     }
   };
