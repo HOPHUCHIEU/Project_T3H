@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/common/Header";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { appointmentService } from "../services/appointment.service";
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -23,10 +26,22 @@ const HomePage = () => {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý logic đặt bàn ở đây
-    console.log({ selectedDate, selectedTime, guests });
+    try {
+      await appointmentService.createAppointment({
+        date: selectedDate,
+        time: selectedTime,
+        numberOfPeople: guests,
+      });
+      toast.success('Đặt bàn thành công!', { autoClose: 1500 });
+      setTimeout(() => navigate('/bookings'), 1500);
+    } catch (err) {
+      console.error('Booking error:', err);
+      toast.error('Không thể đặt bàn. Vui lòng thử lại!');
+    }
   };
 
   return (
@@ -238,6 +253,7 @@ const HomePage = () => {
           </motion.div>
         </div>
       </section>
+      <ToastContainer />
       <Outlet />
       <Footer />
     </div>
