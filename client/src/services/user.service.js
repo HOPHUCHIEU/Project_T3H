@@ -12,8 +12,8 @@ export const userService = {
   },
 
   async updateUser(id, userData) {
-    const response = await api.put(`/users/${id}`, userData);
-    return response.data;
+  const response = await api.patch(`/users/${id}`, userData); // dùng PATCH thay vì PUT
+  return response.data;
   },
 
   async deleteUser(id) {

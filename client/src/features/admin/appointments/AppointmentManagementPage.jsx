@@ -1,40 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../../context/AuthContext'
 import { Navigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { appointmentService } from '../../../services/appointment.service'
 
 const AppointmentManagementPage = () => {
   const { user } = useAuth()
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      customerName: "Nguyễn Văn A",
-      date: "2025-06-20",
-      time: "18:30",
-      guests: 4,
-      status: "pending",
-      phoneNumber: "0123456789",
-      notes: "Vị trí gần cửa sổ",
-      createdAt: "2025-06-16"
-    },
-    // Dữ liệu mẫu
-  ])
-
+  const [appointments, setAppointments] = useState([])
   const [filterStatus, setFilterStatus] = useState('all')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchAppointments()
+  }, [])
+
+  const fetchAppointments = async () => {
+    setLoading(true)
+    try {
+      const data = await appointmentService.getAppointments()
+      setAppointments(data)
+    } catch {
+      toast.error('Không thể tải danh sách lịch hẹn!')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Kiểm tra đăng nhập và quyền admin
   if (!user || user.role !== 'admin') {
     return <Navigate to="/login" />
   }
 
-  const handleStatusChange = (appointmentId, newStatus) => {
-    setAppointments(appointments.map(app => 
-      app.id === appointmentId 
-        ? { ...app, status: newStatus }
-        : app
-    ))
-    toast.success('Cập nhật trạng thái thành công!')
-  }
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -126,64 +122,23 @@ const AppointmentManagementPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredAppointments.map((appointment) => (
-                  <tr key={appointment.id}>
+                {loading ? (
+                  <tr><td colSpan={8} className="text-center py-8">Đang tải...</td></tr>
+                ) : filteredAppointments.length === 0 ? (
+                  <tr><td colSpan={8} className="text-center py-8">Không có lịch hẹn</td></tr>
+                ) : filteredAppointments.map((app) => (
+                  <tr key={app._id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app._id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app.userId?.username || app.userId?.email || 'Ẩn'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app.date?.slice(0,10)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app.time}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app.numberOfPeople}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {appointment.id}
+                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusBadgeClass(app.status)}`}>{getStatusText(app.status)}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {appointment.customerName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {appointment.notes}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{appointment.date}</div>
-                      <div className="text-sm text-gray-500">{appointment.time}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {appointment.guests} người
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(appointment.status)}`}>
-                        {getStatusText(appointment.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{appointment.phoneNumber}</div>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{app.notes || ''}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-3">
-                        {appointment.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleStatusChange(appointment.id, 'confirmed')}
-                              className="text-green-600 hover:text-green-900"
-                            >
-                              Xác nhận
-                            </button>
-                            <button
-                              onClick={() => handleStatusChange(appointment.id, 'cancelled')}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Hủy
-                            </button>
-                          </>
-                        )}
-                        {appointment.status === 'confirmed' && (
-                          <button
-                            onClick={() => handleStatusChange(appointment.id, 'completed')}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Hoàn thành
-                          </button>
-                        )}
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          Chi tiết
-                        </button>
-                      </div>
+                      {/* Thêm nút xác nhận/hủy nếu muốn */}
                     </td>
                   </tr>
                 ))}
