@@ -22,7 +22,8 @@ const UserManagementPage = () => {
     setLoading(true)
     try {
       const data = await userService.getAllUsers()
-      setUsers(data)
+      // Lọc bỏ user có role admin
+      setUsers(data.filter(u => u.role !== 'admin'))
     } catch {
       toast.error('Không thể tải danh sách người dùng!')
     }
@@ -125,6 +126,7 @@ const UserManagementPage = () => {
                       <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>{user.role}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      {/* Không cho sửa/xóa admin, nhưng do đã lọc ở trên nên không cần kiểm tra ở đây */}
                       <button className="text-indigo-600 hover:text-indigo-900 mr-4" onClick={() => handleEditUser(user)}>Sửa</button>
                       <button className="text-red-600 hover:text-red-900" onClick={() => handleDeleteUser(user._id)}>Xóa</button>
                     </td>
@@ -158,7 +160,7 @@ const UserManagementPage = () => {
               <label className="text-gray-700 font-medium">Vai trò</label>
               <select className="border p-3 rounded-lg focus:ring-2 focus:ring-green-400" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
                 <option value="user">User</option>
-                <option value="admin">Admin</option>
+                {/* Ẩn option admin khi thêm/sửa */}
               </select>
             </div>
             <div className="flex justify-end gap-2 mt-4">

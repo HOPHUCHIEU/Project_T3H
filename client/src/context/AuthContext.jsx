@@ -62,10 +62,8 @@ export const AuthProvider = ({ children }) => {
 
       if (!response.ok) throw new Error("Registration failed");
 
+      // Chỉ trả về data, không tự động đăng nhập
       const data = await response.json();
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
       return data;
     } catch (error) {
       console.error("Registration error:", error);

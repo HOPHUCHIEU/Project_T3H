@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/common/Header";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import { appointmentService } from "../services/appointment.service";
+import { useAuth } from "../context/AuthContext";
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [guests, setGuests] = useState(2);
+  const [note, setNote] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  useAuth();
 
   useEffect(() => {
     // SEO Meta Tags
@@ -23,10 +30,28 @@ const HomePage = () => {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý logic đặt bàn ở đây
-    console.log({ selectedDate, selectedTime, guests });
+    setError("");
+    if (!selectedDate || !selectedTime || !guests) {
+      setError("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+    setLoading(true);
+    try {
+      await appointmentService.createAppointment({
+        date: selectedDate,
+        time: selectedTime,
+        numberOfPeople: guests, // Đúng tên trường
+        notes: note,            // Đúng tên trường
+      });
+      // Sau khi đặt bàn thành công, chuyển hướng sang bookings
+      navigate("/bookings");
+    } catch {
+      setError("Đặt bàn thất bại. Vui lòng thử lại!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -144,24 +169,37 @@ const HomePage = () => {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-4xl font-bold text-center mb-12">Đặt bàn</h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-8"
+            >
+              <h2 className="text-2xl font-bold text-center text-red-600 mb-6">
+                Đặt bàn nhà hàng
+              </h2>
+              {error && (
+                <div className="text-center text-red-500 mb-4">{error}</div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 mb-2">Ngày</label>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Ngày <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2">Thời gian</label>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Thời gian <span className="text-red-500">*</span>
+                  </label>
                   <select
                     value={selectedTime}
                     onChange={(e) => setSelectedTime(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     required
                   >
                     <option value="">Chọn thời gian</option>
@@ -174,24 +212,41 @@ const HomePage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-gray-700 mb-2">Số người</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={guests}
-                  onChange={(e) => setGuests(parseInt(e.target.value))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Số người <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Ghi chú
+                  </label>
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows={2}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none"
+                    placeholder="Ví dụ: Có trẻ em, cần ghép bàn, dị ứng thực phẩm..."
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-red-600 text-white py-4 rounded-lg hover:bg-red-700 transition-colors text-lg font-semibold"
+                className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-4 rounded-xl hover:from-red-600 hover:to-red-800 transition-colors text-lg font-bold shadow-md"
+                disabled={loading}
               >
-                Xác nhận đặt bàn
+                {loading ? "Đang đặt bàn..." : "Xác nhận đặt bàn"}
               </button>
             </form>
           </motion.div>
@@ -241,9 +296,7 @@ const HomePage = () => {
       <Outlet />
       <Footer />
     </div>
-    
   );
-  
 };
 
 export default HomePage;

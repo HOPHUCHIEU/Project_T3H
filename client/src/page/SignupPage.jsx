@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,13 +10,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { register, user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
-  }, [user, navigate]);
+  const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +27,7 @@ const SignupPage = () => {
         draggable: true,
       });
       setTimeout(() => {
-        navigate('/');
+        navigate('/login'); // Chuyển sang trang đăng nhập
       }, 1000);
     } catch (err) {
       toast.error('Đăng ký không thành công!', {
