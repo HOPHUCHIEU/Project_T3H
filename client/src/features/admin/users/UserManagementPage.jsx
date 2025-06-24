@@ -139,8 +139,8 @@ const UserManagementPage = () => {
       </div>
       {/* Modal thêm/sửa user */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-2xl min-w-[350px] w-full max-w-md space-y-6 animate-fadeIn">
+        <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(2px)'}}>
+          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-2xl min-w-[350px] w-full max-w-md space-y-6 animate-fadeIn border border-gray-200">
             <h2 className="text-2xl font-bold mb-2 text-center text-green-700">{editId ? 'Sửa người dùng' : 'Thêm người dùng'}</h2>
             <div className="flex flex-col gap-2">
               <label className="text-gray-700 font-medium">Tên người dùng</label>

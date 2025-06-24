@@ -1,4 +1,6 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable prettier/prettier */
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
@@ -17,7 +19,8 @@ export class JwtAuthGuard implements CanActivate {
     if (!authHeader) throw new UnauthorizedException('No token provided');
     const token = authHeader.split(' ')[1];
     try {
-      this.jwtService.verify(token);
+      const payload = this.jwtService.verify(token); // <-- LẤY PAYLOAD
+      request.user = payload; // <-- PHẢI GÁN VÀO request.user !!!
       return true;
     } catch {
       throw new UnauthorizedException('Invalid token');
