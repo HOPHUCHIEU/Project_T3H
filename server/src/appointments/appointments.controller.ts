@@ -8,7 +8,7 @@ import { RolesGuard } from '../users/guards/roles.guard';
 import { Roles } from '../users/decorators/roles.decorator';
 
 interface UserRequest extends Request {
-  user: { userId: string; role: string };
+  user: { _id: string; role: string };
 }
 
 @Controller('appointments')
@@ -19,8 +19,9 @@ export class AppointmentsController {
   @Post()
   @Roles('user')
   create(@Body() createAppointmentDto: CreateAppointmentDto, @Request() req: UserRequest) {
-    return this.appointmentsService.create(createAppointmentDto, req.user.userId);
-  }
+  return this.appointmentsService.create(createAppointmentDto, req.user._id); // req.user.id đúng là _id của user
+}
+
 
   @Get()
   @Roles('admin')
@@ -31,7 +32,7 @@ export class AppointmentsController {
   @Get('my-appointments')
   @Roles('user')
   findMyAppointments(@Request() req: UserRequest) {
-    return this.appointmentsService.findByUserId(req.user.userId);
+    return this.appointmentsService.findByUserId(req.user._id);
   }
 
   @Put(':id/confirm')

@@ -23,7 +23,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<any> {
     try {
-      const { email, password, username } = createUserDto;
+      const { email, password, username, role } = createUserDto;
       // Check if user exists
       const existingUser = await this.userModel.findOne({ email });
       if (existingUser) {
@@ -36,6 +36,7 @@ export class UserService {
         email,
         username,
         password: hashedPassword,
+        role: role || 'user',
       });
       const user = await newUser.save();
       return this.generateUserResponse(user);
