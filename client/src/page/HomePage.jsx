@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { appointmentService } from "../services/appointment.service";
 import { useAuth } from "../context/AuthContext";
-import foods from '../data/foods';
+import foods from "../data/foods";
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -45,7 +45,7 @@ const HomePage = () => {
         date: selectedDate,
         time: selectedTime,
         numberOfPeople: guests, // Đúng tên trường
-        notes: note,            // Đúng tên trường
+        notes: note, // Đúng tên trường
       });
       // Sau khi đặt bàn thành công, chuyển hướng sang bookings
       navigate("/bookings");
@@ -55,10 +55,13 @@ const HomePage = () => {
       setLoading(false);
     }
   };
+  const handleFoodClick = (slug) => {
+    navigate(`/food/${slug}`);
+  };
 
-const filteredFoods = foods.filter(food =>
-  food.name.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  const filteredFoods = foods.filter((food) =>
+    food.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen">
@@ -328,6 +331,7 @@ const filteredFoods = foods.filter(food =>
                   className="bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
                   itemScope
                   itemType="http://schema.org/Product"
+                  onClick={() => handleFoodClick(food.slug)}
                 >
                   <img
                     src={food.image}
@@ -373,13 +377,9 @@ const filteredFoods = foods.filter(food =>
                     >
                       {food.location}
                     </div>
-                    <a
-                      href="#"
-                      className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors"
-                      aria-label={`Mua ${food.name}`}
-                    >
+                    <span className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors">
                       Mua ngay
-                    </a>
+                    </span>
                   </div>
                 </article>
               ))

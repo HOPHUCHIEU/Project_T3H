@@ -17,6 +17,7 @@ import HomePage from "../page/HomePage";
 import AboutPage from "../page/AboutPage";
 import Contact from "../page/Contact";
 import Service from "../page/Service";
+import FoodDetail from "../page/FoodDetail";
 
 // Auth layout & protection
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -77,6 +78,10 @@ const routes = [
   {
     path: "/contact",
     element: <Contact />,
+  },
+  {
+    path: "/food/:slug",
+    element: <FoodDetail />,
   },
   {
     path: "*",

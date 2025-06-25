@@ -39,9 +39,7 @@ const Header = () => {
         {/* Logo */}
         <Link
           to="/"
-          className={`text-2xl font-bold transition-colors duration-300 ${
-            isHomePage && !isScrolled ? "text-white" : "text-red-600"
-          }`}
+          className="text-2xl font-bold text-red-600"
         >
           Luxury Buffet
         </Link>
@@ -169,14 +167,14 @@ const Header = () => {
   return isHomePage ? (
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 ${
-        isScrolled ? "bg-white shadow-lg" : "bg-transparent"
+        isScrolled ? "bg-[#e3f0fa] shadow-lg" : "bg-transparent"
       }`}
       initial={{ y: -100, opacity: 0 }}
       animate={{
         y: 0,
         opacity: 1,
         backgroundColor: isScrolled
-          ? "rgba(255, 255, 255, 0.95)"
+          ? "#e3f0fa" // màu xanh dương nhạt khi scroll trên trang chủ
           : "rgba(0, 0, 0, 0)",
         boxShadow: isScrolled ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" : "none",
       }}
@@ -185,7 +183,7 @@ const Header = () => {
       {headerContent}
     </motion.header>
   ) : (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#e3f0fa] shadow-lg">
       {headerContent}
     </header>
   );
