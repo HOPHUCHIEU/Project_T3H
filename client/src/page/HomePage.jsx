@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { appointmentService } from "../services/appointment.service";
 import { useAuth } from "../context/AuthContext";
+import foods from '../data/foods';
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -13,6 +14,7 @@ const HomePage = () => {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   useAuth();
 
@@ -53,6 +55,10 @@ const HomePage = () => {
       setLoading(false);
     }
   };
+
+const filteredFoods = foods.filter(food =>
+  food.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   return (
     <div className="min-h-screen">
@@ -291,6 +297,94 @@ const HomePage = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Food Menu Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">
+            Gian món ăn nổi bật
+          </h2>
+          <div className="max-w-md mx-auto mb-10">
+            <input
+              type="text"
+              placeholder="Tìm kiếm món ăn..."
+              aria-label="Tìm kiếm món ăn"
+              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition shadow"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {filteredFoods.length === 0 ? (
+              <div className="col-span-full text-center text-gray-500">
+                Không tìm thấy món ăn phù hợp.
+              </div>
+            ) : (
+              filteredFoods.map((food, idx) => (
+                <article
+                  key={idx}
+                  className="bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+                  itemScope
+                  itemType="http://schema.org/Product"
+                >
+                  <img
+                    src={food.image}
+                    alt={food.name}
+                    className="h-48 w-full object-cover"
+                    loading="lazy"
+                    itemProp="image"
+                  />
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3
+                      className="text-lg font-semibold mb-2 text-gray-900"
+                      itemProp="name"
+                    >
+                      {food.name}
+                    </h3>
+                    <div className="flex items-center mb-2">
+                      <span
+                        className="text-red-600 text-xl font-bold mr-2"
+                        itemProp="offers"
+                        itemScope
+                        itemType="http://schema.org/Offer"
+                      >
+                        <meta itemProp="priceCurrency" content="VND" />
+                        <span itemProp="price">
+                          ₫{food.price.toLocaleString()}
+                        </span>
+                      </span>
+                      <span className="ml-auto flex items-center text-yellow-500">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="currentColor"
+                          className="mr-1"
+                        >
+                          <path d="M9 1.5l2.47 5.01 5.53.8-4 3.89.94 5.5L9 13.77l-4.94 2.59.94-5.5-4-3.89 5.53-.8z" />
+                        </svg>
+                        {food.rating}
+                      </span>
+                    </div>
+                    <div
+                      className="text-sm text-gray-500 mb-4"
+                      itemProp="description"
+                    >
+                      {food.location}
+                    </div>
+                    <a
+                      href="#"
+                      className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors"
+                      aria-label={`Mua ${food.name}`}
+                    >
+                      Mua ngay
+                    </a>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
         </div>
       </section>
       <Outlet />

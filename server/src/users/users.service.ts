@@ -94,6 +94,10 @@ export class UserService {
 
   async findOne(id: string): Promise<User> {
     try {
+      // Kiểm tra id hợp lệ
+      if (!id || id.length !== 24) {
+        throw new NotFoundException('ID người dùng không hợp lệ');
+      }
       const user = await this.userModel.findById(id).exec();
       if (!user) {
         throw new NotFoundException('Không tìm thấy người dùng');
@@ -103,6 +107,8 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      // Ghi log lỗi chi tiết để debug
+      console.error('findOne user error:', error);
       throw new Error('Có lỗi xảy ra khi tìm kiếm người dùng');
     }
   }
