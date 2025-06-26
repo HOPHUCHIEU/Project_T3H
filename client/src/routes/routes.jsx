@@ -9,6 +9,7 @@ import MenuManagementPage from "../features/admin/menu/MenuManagementPage";
 // User pages
 import ProfilePage from "../features/user/profile/ProfilePage";
 import BookingsPage from "../features/user/bookings/BookingsPage";
+import Payments from "../page/Payments";
 
 // Public pages
 import LoginPage from "../page/LoginPage";
@@ -18,6 +19,7 @@ import AboutPage from "../page/AboutPage";
 import Contact from "../page/Contact";
 import Service from "../page/Service";
 import FoodDetail from "../page/FoodDetail";
+
 
 // Auth layout & protection
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -82,6 +84,10 @@ const routes = [
   {
     path: "/food/:slug",
     element: <FoodDetail />,
+  },
+  {
+    path: "/payments",
+    element: <Payments />,
   },
   {
     path: "*",

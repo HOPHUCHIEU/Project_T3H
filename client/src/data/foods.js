@@ -4,7 +4,7 @@ const foods = [
     price: 205000,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.9,
-    location: "Hà Nội",
+    location: "Bàn Vip 1",
     slug: "chan-ga-nuong-mat-ong"
   },
   {
@@ -12,7 +12,7 @@ const foods = [
     price: 215000,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.7,
-    location: "TP. Hồ Chí Minh",
+    location: "Bàn Vip 1",
     slug: "sashimi-ca-hoi"
   },
   {
@@ -20,7 +20,7 @@ const foods = [
     price: 79000,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.9,
-    location: "Hà Nội",
+    location: "Bàn Vip 1",
     slug: "bo-cuon-nam-kim-cham"
   },
   {
@@ -28,7 +28,7 @@ const foods = [
     price: 79000,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.9,
-    location: "Bắc Giang",
+    location: "Bàn Vip 1",
     slug: "ga-ran-gion-tan"
   },
   {
@@ -36,7 +36,7 @@ const foods = [
     price: 73440,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.1,
-    location: "TP. Hồ Chí Minh",
+    location: "Bàn Vip 1",
     slug: "banh-mi-kep-thit-nuong"
   },
   {
@@ -44,7 +44,7 @@ const foods = [
     price: 73440,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.1,
-    location: "TP. Hồ Chí Minh",
+    location: "Bàn Vip 1",
     slug: "tom-hum-nuong-pho-mai"
   },
   {
@@ -52,7 +52,7 @@ const foods = [
     price: 73440,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.1,
-    location: "TP. Hồ Chí Minh",
+    location: "Bàn Vip 1",
     slug: "hau-nuong-mo-hanh"
   },
   {
@@ -60,7 +60,7 @@ const foods = [
     price: 73440,
     image: "https://statics.vincom.com.vn/xu-huong/nha-hang-view-dep-da-nang-La-Maison-Deli-1657105318.jpeg",
     rating: 4.5,
-    location: "TP. Hồ Chí Minh",
+    location: "Bàn Vip 1",
     slug: "cua-hoang-de"
   },
 ];

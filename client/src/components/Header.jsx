@@ -37,10 +37,7 @@ const Header = () => {
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center justify-between h-20">
         {/* Logo */}
-        <Link
-          to="/"
-          className="text-2xl font-bold text-red-600"
-        >
+        <Link to="/" className="text-2xl font-bold text-red-600">
           Luxury Buffet
         </Link>
 
@@ -54,7 +51,7 @@ const Header = () => {
                 location.pathname === link.to
                   ? "text-red-600 font-semibold"
                   : isHomePage && !isScrolled
-                  ? "text-white"
+                  ? "text-red-600"
                   : "text-gray-800 hover:text-red-600"
               }`}
             >
@@ -112,12 +109,19 @@ const Header = () => {
                   {user.role === "admin" ? (
                     <>
                       <DropdownItem to="/admin/dashboard" text="Dashboard" />
-                      <DropdownItem to="/admin/users" text="Quản lý người dùng" />
-                      <DropdownItem to="/admin/appointments" text="Quản lý thực đơn" />
+                      <DropdownItem
+                        to="/admin/users"
+                        text="Quản lý người dùng"
+                      />
+                      <DropdownItem
+                        to="/admin/appointments"
+                        text="Quản lý thực đơn"
+                      />
                     </>
                   ) : (
                     <>
                       <DropdownItem to="/profile" text="Thông tin cá nhân" />
+                      <DropdownItem to="/payments" text="Thanh toán" />
                       <DropdownItem
                         to="/bookings"
                         text="Lịch hẹn đặt bàn"

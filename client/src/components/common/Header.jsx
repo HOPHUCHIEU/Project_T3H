@@ -10,6 +10,17 @@ const Header = () => {
   const isHomePage = location.pathname === "/";
   const { user, logout } = useAuth();
 
+  const DropdownItem = ({ to, text, highlight }) => (
+    <Link
+      to={to}
+      className={`flex items-center px-4 py-2 text-sm ${
+        highlight ? "text-red-600 font-semibold" : "text-gray-700"
+      } hover:bg-gray-100`}
+    >
+      {text}
+    </Link>
+  );
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -49,10 +60,11 @@ const Header = () => {
         <Link
           to="/"
           className={`text-2xl font-bold ${
-            isScrolled ? "text-red-600" : "text-white"
+            isScrolled ? "text-red-600" : "text-red-500"
           } transition-colors duration-300`}
         >
-          Luxury Buffet
+          <span className="text-red-600">Luxury</span>
+          <span className="text-blue-600 ml-1">Buffet</span>
         </Link>
 
         {/* Navigation Links */}
@@ -62,8 +74,8 @@ const Header = () => {
               key={link.to}
               to={link.to}
               className={`${
-                isScrolled ? "text-gray-800" : "text-white"
-              } hover:text-red-600 transition-colors duration-300`}
+                isScrolled ? "text-gray-800" : "text-red-500"
+              } hover:text-blue-500 transition-colors duration-300`}
             >
               {link.text}
             </Link>
@@ -196,6 +208,26 @@ const Header = () => {
                           />
                         </svg>
                         Thông tin cá nhân
+                      </Link>
+                      <Link
+                        to="/payments"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-4h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4a2 2 0 012-2z"
+                          />
+                        </svg>
+                        Thanh toán
                       </Link>
                       <Link
                         to="/bookings"

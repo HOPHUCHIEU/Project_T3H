@@ -88,9 +88,10 @@ const HomePage = () => {
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="text-7xl font-bold mb-6 font-serif"
+              className="text-7xl font-bold mb-6 font-serif flex justify-center items-center select-none"
             >
-              Luxury Buffet
+              <span className="text-red-600">Luxury</span>
+              <span className="text-blue-600 ml-2">Buffet</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -377,9 +378,9 @@ const HomePage = () => {
                     >
                       {food.location}
                     </div>
-                    <span className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors">
+                    {/* <span className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors">
                       Mua ngay
-                    </span>
+                    </span> */}
                   </div>
                 </article>
               ))

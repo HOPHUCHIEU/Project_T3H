@@ -70,7 +70,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email"
-              className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-green-500"
               required
             />
           </div>
@@ -81,13 +81,13 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu"
-              className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-green-500"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full rounded-md bg-green-500 py-3 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="w-full rounded-md bg-red-500 py-3 text-white hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
             Đăng nhập
           </button>
