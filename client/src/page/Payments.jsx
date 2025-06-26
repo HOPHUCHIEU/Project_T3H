@@ -3,35 +3,14 @@ import { motion } from 'framer-motion';
 import Header from '../components/Header';
 
 const Payments = () => {
-  const [cart, setCart] = useState([]);
+  const [selectedFood, setSelectedFood] = useState(null);
 
   useEffect(() => {
-    // Lấy giỏ hàng từ localStorage (nếu có)
-    const cartData = localStorage.getItem('cartFoods');
-    if (cartData) {
-      setCart(JSON.parse(cartData));
-    } else {
-      // Nếu chưa có, kiểm tra selectedFood (từ đặt món)
-      const foodData = localStorage.getItem('selectedFood');
-      if (foodData) {
-        const food = JSON.parse(foodData);
-        setCart([{ ...food, quantity: 1 }]);
-        localStorage.setItem('cartFoods', JSON.stringify([{ ...food, quantity: 1 }]));
-        localStorage.removeItem('selectedFood');
-      }
+    const foodData = localStorage.getItem('selectedFood');
+    if (foodData) {
+      setSelectedFood(JSON.parse(foodData));
     }
   }, []);
-
-  // Thay đổi số lượng món ăn
-  const handleQuantityChange = (index, value) => {
-    const newCart = [...cart];
-    newCart[index].quantity = Math.max(1, value);
-    setCart(newCart);
-    localStorage.setItem('cartFoods', JSON.stringify(newCart));
-  };
-
-  // Tính tổng tiền
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <>
@@ -46,40 +25,17 @@ const Payments = () => {
           >
             <h1 className="text-3xl font-bold text-gray-800 mb-8">Thanh toán</h1>
 
-            {cart.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Các món đã chọn</h2>
-                <div className="space-y-6">
-                  {cart.map((item, idx) => (
-                    <div key={item.slug} className="flex items-center gap-6 border-b pb-4">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-24 h-24 object-cover rounded-xl border"
-                      />
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{item.name}</h3>
-                        <div className="text-gray-600 text-sm mb-1">Khu vực phục vụ: <span className="font-semibold">{item.location}</span></div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-red-600 font-bold">₫{item.price.toLocaleString()}</span>
-                          <span className="mx-2">x</span>
-                          <input
-                            type="number"
-                            min={1}
-                            value={item.quantity}
-                            onChange={e => handleQuantityChange(idx, parseInt(e.target.value) || 1)}
-                            className="w-16 border rounded px-2 py-1 text-center"
-                          />
-                        </div>
-                      </div>
-                      <div className="text-lg font-bold text-gray-800 min-w-[100px] text-right">
-                        ₫{(item.price * item.quantity).toLocaleString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-end mt-6">
-                  <span className="text-2xl font-bold text-red-600">Tổng cộng: ₫{total.toLocaleString()}</span>
+            {selectedFood && (
+              <div className="mb-8 flex items-center gap-6">
+                <img
+                  src={selectedFood.image}
+                  alt={selectedFood.name}
+                  className="w-32 h-32 object-cover rounded-xl border"
+                />
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">{selectedFood.name}</h2>
+                  <div className="text-red-600 text-lg font-bold mb-1">₫{selectedFood.price.toLocaleString()}</div>
+                  <div className="text-gray-600 text-sm">Khu vực phục vụ: <span className="font-semibold">{selectedFood.location}</span></div>
                 </div>
               </div>
             )}
