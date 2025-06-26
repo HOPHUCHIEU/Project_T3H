@@ -2,15 +2,86 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 
-const Payments = () => {
-  const [selectedFood, setSelectedFood] = useState(null);
+const fakeHistory = [
+  {
+    id: 123,
+    date: '15/06/2025',
+    amount: 1500000,
+    status: 'Đã thanh toán',
+  },
+  {
+    id: 122,
+    date: '10/06/2025',
+    amount: 2000000,
+    status: 'Đã thanh toán',
+  },
+  {
+    id: 121,
+    date: '05/06/2025',
+    amount: 950000,
+    status: 'Đã thanh toán',
+  },
+];
 
+const Payments = () => {
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    // Lấy giỏ hàng từ localStorage (nếu có)
+    const cartData = localStorage.getItem('cartFoods');
+    if (cartData) {
+      setCart(JSON.parse(cartData));
+    } else {
+      // Nếu chưa có, kiểm tra selectedFood (từ đặt món)
+      const foodData = localStorage.getItem('selectedFood');
+      if (foodData) {
+        const food = JSON.parse(foodData);
+        setCart([{ ...food, quantity: 1 }]);
+        localStorage.setItem('cartFoods', JSON.stringify([{ ...food, quantity: 1 }]));
+        localStorage.removeItem('selectedFood');
+      }
+    }
+  }, []);
+
+  // Nếu người dùng chọn món mới ở trang khác, thêm vào giỏ hàng
   useEffect(() => {
     const foodData = localStorage.getItem('selectedFood');
     if (foodData) {
-      setSelectedFood(JSON.parse(foodData));
+      const food = JSON.parse(foodData);
+      setCart(prevCart => {
+        // Kiểm tra nếu món đã có thì tăng số lượng, chưa có thì thêm mới
+        const idx = prevCart.findIndex(item => item.slug === food.slug);
+        let newCart;
+        if (idx !== -1) {
+          newCart = [...prevCart];
+          newCart[idx].quantity += 1;
+        } else {
+          newCart = [...prevCart, { ...food, quantity: 1 }];
+        }
+        localStorage.setItem('cartFoods', JSON.stringify(newCart));
+        return newCart;
+      });
+      localStorage.removeItem('selectedFood');
     }
   }, []);
+
+  // Thay đổi số lượng món ăn
+  const handleQuantityChange = (index, value) => {
+    const newCart = [...cart];
+    newCart[index].quantity = Math.max(1, value);
+    setCart(newCart);
+    localStorage.setItem('cartFoods', JSON.stringify(newCart));
+  };
+
+  // Xóa món ăn khỏi giỏ hàng
+  const handleRemoveItem = (index) => {
+    const newCart = cart.filter((_, i) => i !== index);
+    setCart(newCart);
+    localStorage.setItem('cartFoods', JSON.stringify(newCart));
+  };
+
+  // Tính tổng tiền
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <>
@@ -25,17 +96,48 @@ const Payments = () => {
           >
             <h1 className="text-3xl font-bold text-gray-800 mb-8">Thanh toán</h1>
 
-            {selectedFood && (
-              <div className="mb-8 flex items-center gap-6">
-                <img
-                  src={selectedFood.image}
-                  alt={selectedFood.name}
-                  className="w-32 h-32 object-cover rounded-xl border"
-                />
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">{selectedFood.name}</h2>
-                  <div className="text-red-600 text-lg font-bold mb-1">₫{selectedFood.price.toLocaleString()}</div>
-                  <div className="text-gray-600 text-sm">Khu vực phục vụ: <span className="font-semibold">{selectedFood.location}</span></div>
+            {cart.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold mb-4">Các món đã chọn</h2>
+                <div className="space-y-6">
+                  {cart.map((item, idx) => (
+                    <div key={item.slug || idx} className="flex items-center gap-6 border-b pb-4">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-24 h-24 object-cover rounded-xl border"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{item.name}</h3>
+                        <div className="text-gray-600 text-sm mb-1">Khu vực phục vụ: <span className="font-semibold">{item.location}</span></div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-red-600 font-bold">₫{item.price.toLocaleString()}</span>
+                          <span className="mx-2">x</span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={item.quantity}
+                            onChange={e => handleQuantityChange(idx, parseInt(e.target.value) || 1)}
+                            className="w-16 border rounded px-2 py-1 text-center"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end min-w-[120px]">
+                        <div className="text-lg font-bold text-gray-800 text-right">
+                          ₫{(item.price * item.quantity).toLocaleString()}
+                        </div>
+                        <button
+                          onClick={() => handleRemoveItem(idx)}
+                          className="mt-2 px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-end mt-6">
+                  <span className="text-2xl font-bold text-red-600">Tổng cộng: ₫{total.toLocaleString()}</span>
                 </div>
               </div>
             )}
@@ -91,31 +193,20 @@ const Payments = () => {
               <div>
                 <h2 className="text-xl font-semibold mb-4">Lịch sử thanh toán</h2>
                 <div className="space-y-4">
-                  <div className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">Đặt bàn #123</h3>
-                        <p className="text-sm text-gray-600">Ngày: 15/06/2025</p>
-                        <p className="text-sm text-gray-600">Số tiền: 1,500,000 VNĐ</p>
+                  {fakeHistory.map((item) => (
+                    <div key={item.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium">Đặt bàn #{item.id}</h3>
+                          <p className="text-sm text-gray-600">Ngày: {item.date}</p>
+                          <p className="text-sm text-gray-600">Số tiền: {item.amount.toLocaleString()} VNĐ</p>
+                        </div>
+                        <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                          {item.status}
+                        </span>
                       </div>
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        Đã thanh toán
-                      </span>
                     </div>
-                  </div>
-
-                  <div className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">Đặt bàn #122</h3>
-                        <p className="text-sm text-gray-600">Ngày: 10/06/2025</p>
-                        <p className="text-sm text-gray-600">Số tiền: 2,000,000 VNĐ</p>
-                      </div>
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        Đã thanh toán
-                      </span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
