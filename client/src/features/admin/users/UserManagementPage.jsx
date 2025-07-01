@@ -14,18 +14,42 @@ const UserManagementPage = () => {
   const [editId, setEditId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  // Thêm state cho phân trang và tìm kiếm
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [page, search])
 
   const fetchUsers = async () => {
     setLoading(true)
     try {
-      const data = await userService.getAllUsers()
-      // Lọc bỏ user có role admin
-      setUsers(data.filter(u => u.role !== 'admin'))
+      const data = await userService.getAllUsers(page, limit, search)
+      let userList = Array.isArray(data) ? data : data.users
+      if (!Array.isArray(userList)) userList = []
+      // Lọc bỏ admin trước khi phân trang
+      let filteredUsers = userList.filter(u => u.role !== 'admin')
+      // Nếu có search, ưu tiên user khớp từ khóa lên đầu
+      if (search.trim()) {
+        const keyword = search.trim().toLowerCase()
+        filteredUsers = filteredUsers.sort((a, b) => {
+          const aMatch = a.username.toLowerCase().includes(keyword) || a.email.toLowerCase().includes(keyword)
+          const bMatch = b.username.toLowerCase().includes(keyword) || b.email.toLowerCase().includes(keyword)
+          if (aMatch && !bMatch) return -1
+          if (!aMatch && bMatch) return 1
+          return 0
+        })
+      }
+      setUsers(filteredUsers)
+      // Tính lại totalPages dựa trên số lượng user đã filter nếu API không trả về đúng
+      const total = data.totalPages || Math.ceil(filteredUsers.length / limit) || 1
+      setTotalPages(total)
     } catch {
+      setUsers([])
+      setTotalPages(1)
       toast.error('Không thể tải danh sách người dùng!')
     }
     setLoading(false)
@@ -100,7 +124,7 @@ const UserManagementPage = () => {
           {message}
         </div>
       )}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7x1 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b border-gray-200">
             <div className="flex justify-between items-center">
@@ -109,8 +133,17 @@ const UserManagementPage = () => {
                 Thêm người dùng
               </button>
             </div>
+            {/* Tìm kiếm */}
+            <div className="mt-4 flex gap-2">
+              <input
+                type="text"
+                placeholder="Tìm kiếm tên hoặc email..."
+                className="border px-3 py-2 rounded-lg w-64"
+                value={search}
+                onChange={e => { setSearch(e.target.value); setPage(1); }}
+              />
+            </div>
           </div>
-
           {/* Bảng danh sách người dùng */}
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -128,16 +161,15 @@ const UserManagementPage = () => {
                   <tr><td colSpan={5} className="text-center py-8">Đang tải...</td></tr>
                 ) : users.length === 0 ? (
                   <tr><td colSpan={5} className="text-center py-8">Không có người dùng</td></tr>
-                ) : users.map((user, idx) => (
+                ) : users.slice((page-1)*limit, page*limit).map((user, idx) => (
                   <tr key={user._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{idx + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(page - 1) * limit + idx + 1}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.username}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>{user.role}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {/* Không cho sửa/xóa admin, nhưng do đã lọc ở trên nên không cần kiểm tra ở đây */}
                       <button className="text-indigo-600 hover:text-indigo-900 mr-4" onClick={() => handleEditUser(user)}>Sửa</button>
                       <button className="text-red-600 hover:text-red-900" onClick={() => handleDeleteUser(user._id)}>Xóa</button>
                     </td>
@@ -145,6 +177,20 @@ const UserManagementPage = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+          {/* Phân trang */}
+          <div className="flex justify-center items-center gap-2 py-4">
+            <button
+              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >Trước</button>
+            <span>Trang {page} / {totalPages}</span>
+            <button
+              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >Sau</button>
           </div>
         </div>
       </div>
