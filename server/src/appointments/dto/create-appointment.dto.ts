@@ -1,24 +1,53 @@
 /* eslint-disable prettier/prettier */
-import {
-  IsDateString,
-  IsNumber,
-  IsString,
-  IsOptional,
-  Min,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateAppointmentDto {
-  @IsDateString()
+  @IsString()
+  @IsNotEmpty()
   date: string;
 
   @IsString()
+  @IsNotEmpty()
   time: string;
 
   @IsNumber()
-  @Min(1)
-  numberOfPeople: number;
+  guests: number;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
 
   @IsString()
+  @IsNotEmpty()
+  customerName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  customerPhone: string;
+
   @IsOptional()
-  notes?: string;
+  @IsString()
+  customerEmail?: string;
+}
+
+export class UpdateAppointmentDto {
+  @IsOptional()
+  @IsString()
+  date?: string;
+
+  @IsOptional()
+  @IsString()
+  time?: string;
+
+  @IsOptional()
+  @IsNumber()
+  guests?: number;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

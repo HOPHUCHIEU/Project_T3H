@@ -1,33 +1,34 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
-export enum AppointmentStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled'
-}
+export type AppointmentDocument = Appointment & Document;
 
 @Schema({ timestamps: true })
 export class Appointment {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
+  @Prop({ required: true })
+  date: string; // YYYY-MM-DD
 
   @Prop({ required: true })
-  date: Date;
+  time: string; // HH:mm
 
   @Prop({ required: true })
-  time: string;
+  guests: number; // số khách
 
-  @Prop({ required: true })
-  numberOfPeople: number;
+  @Prop({ default: '' })
+  note: string; // ghi chú
 
-  @Prop({ required: true, enum: AppointmentStatus, default: AppointmentStatus.PENDING })
-  status: AppointmentStatus;
+  @Prop({ default: 'pending', enum: ['pending', 'approved', 'cancelled', 'completed'] })
+  status: string; // trạng thái lịch hẹn
 
-  @Prop()
-  notes: string;
+  @Prop({ required: true, type: String })
+  customerName: string;
+
+  @Prop({ required: true, type: String })
+  customerPhone: string;
+
+  @Prop({ type: String })
+  customerEmail: string;
 }
 
-export type AppointmentDocument = Appointment & Document;
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);

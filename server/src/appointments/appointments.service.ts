@@ -1,54 +1,53 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import {
-  Appointment,
-  AppointmentDocument,
-  AppointmentStatus,
-} from './schemas/appointment.schema';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { Model } from 'mongoose';
+import { Appointment, AppointmentDocument } from './schemas/appointment.schema';
+import { CreateAppointmentDto, UpdateAppointmentDto } from './dto/create-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
   constructor(
-    @InjectModel(Appointment.name)
-    private appointmentModel: Model<AppointmentDocument>,
+    @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
   ) {}
 
-  async create(createAppointmentDto: CreateAppointmentDto, userId: string) {
-    const appointment = new this.appointmentModel({
-      ...createAppointmentDto,
-      userId: new Types.ObjectId(userId),
-      status: AppointmentStatus.PENDING,
-    });
-    return await appointment.save();
+  async create(createAppointmentDto: CreateAppointmentDto): Promise<Appointment> {
+    const created = new this.appointmentModel(createAppointmentDto);
+    return created.save();
   }
 
-  async findAll() {
-    return await this.appointmentModel.find().populate('userId', 'name email');
+  async findAll({ page = 1, limit = 10, status = '' }) {
+    const filter = status ? { status } : {};
+    const skip = (page - 1) * limit;
+    const data = await this.appointmentModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const total = await this.appointmentModel.countDocuments(filter);
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
-  async findByUserId(userId: string) {
-    return await this.appointmentModel
-      .find({ userId: new Types.ObjectId(userId) })
-      .populate('userId', 'name email');
+  async findOne(id: string) {
+    const appt = await this.appointmentModel.findById(id);
+    if (!appt) throw new NotFoundException('Appointment not found');
+    return appt;
   }
 
-  async updateStatus(id: string, status: AppointmentStatus) {
-    const appointment = await this.appointmentModel.findById(id);
-    if (!appointment) {
-      throw new NotFoundException('Appointment not found');
-    }
-    appointment.status = status;
-    return await appointment.save();
+  async findMyAppointments(customerPhone: string) {
+    return this.appointmentModel.find({ customerPhone }).sort({ createdAt: -1 });
   }
 
-  async delete(id: string) {
-    const result = await this.appointmentModel.deleteOne({ _id: new Types.ObjectId(id) });
-    if (result.deletedCount === 0) {
-      throw new NotFoundException('Appointment not found');
-    }
-    return { message: 'Appointment deleted successfully' };
+  async update(id: string, updateDto: UpdateAppointmentDto) {
+    const updated = await this.appointmentModel.findByIdAndUpdate(id, updateDto, { new: true });
+    if (!updated) throw new NotFoundException('Appointment not found');
+    return updated;
+  }
+
+  async remove(id: string) {
+    const deleted = await this.appointmentModel.findByIdAndDelete(id);
+    if (!deleted) throw new NotFoundException('Appointment not found');
+    return deleted;
   }
 }
