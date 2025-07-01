@@ -13,6 +13,7 @@ const UserManagementPage = () => {
   const [form, setForm] = useState(initialForm)
   const [editId, setEditId] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     fetchUsers()
@@ -75,20 +76,30 @@ const UserManagementPage = () => {
           submitForm = rest
         }
         await userService.updateUser(editId, submitForm)
+        setMessage('Cập nhật người dùng thành công!')
         toast.success('Cập nhật thành công!')
       } else {
-        await userService.register(form.username, form.email, form.password)
+        await userService.registerUser(form);
+        setMessage('Thêm người dùng thành công!')
         toast.success('Thêm người dùng thành công!')
       }
       setShowModal(false)
       fetchUsers()
+      setTimeout(() => setMessage(''), 3000)
     } catch {
+      setMessage('Thao tác thất bại!')
       toast.error('Thao tác thất bại!')
+      setTimeout(() => setMessage(''), 3000)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-100 pt-24 pb-12">
+      {message && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg animate-fadeIn">
+          {message}
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b border-gray-200">

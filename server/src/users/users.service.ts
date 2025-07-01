@@ -167,6 +167,60 @@ export class UserService {
     }
   }
 
+  async findMe(userId: string): Promise<User> {
+    try {
+      const user = await this.userModel.findById(userId).select('-password').exec();
+      if (!user) {
+        throw new NotFoundException('Không tìm thấy người dùng');
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error('Có lỗi xảy ra khi lấy thông tin người dùng');
+    }
+  }
+
+  async updateMe(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
+    try {
+      const user = await this.userModel.findById(userId);
+      if (!user) {
+        throw new NotFoundException('Không tìm thấy người dùng');
+      }
+
+      // Kiểm tra email mới nếu có
+      if (updateUserDto.email && updateUserDto.email !== user.email) {
+        const existingUser = await this.userModel.findOne({
+          email: updateUserDto.email,
+        });
+        if (existingUser) {
+          throw new BadRequestException('Email đã tồn tại');
+        }
+      }
+
+      // Mã hóa mật khẩu mới nếu có
+      if (updateUserDto.password) {
+        updateUserDto.password = await hash(updateUserDto.password, 10);
+      }
+
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(userId, updateUserDto, { new: true })
+        .select('-password')
+        .exec();
+
+      return updatedUser;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new Error('Có lỗi xảy ra khi cập nhật thông tin người dùng');
+    }
+  }
+
   private generateUserResponse(user: UserDocument) {
     const token = this.jwtService.sign({
       id: user._id,

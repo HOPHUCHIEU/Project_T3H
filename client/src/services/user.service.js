@@ -19,5 +19,10 @@ export const userService = {
   async deleteUser(id) {
     const response = await api.delete(`/users/${id}`);
     return response.data;
+  },
+
+  async registerUser(userData) {
+    const response = await api.post('/users/register', userData);
+    return response.data;
   }
 };
