@@ -12,17 +12,13 @@ export const appointmentService = {
   // Lấy lịch hẹn của user hiện tại (role user)
   async getMyAppointments() {
     const response = await api.get('/appointments/my');
+    // Nếu backend trả { data: [...] } thì sửa lại: return response.data.data;
     return response.data;
   },
 
   // Tạo lịch hẹn mới (đặt bàn)
   async createAppointment({ date, time, guests, note }) {
-    const payload = {
-      date,   // format: 'YYYY-MM-DD'
-      time,   // format: 'HH:mm'
-      guests, // số khách
-      note    // ghi chú đặc biệt
-    };
+    const payload = { date, time, guests, note };
     const response = await api.post('/appointments', payload);
     return response.data;
   },
