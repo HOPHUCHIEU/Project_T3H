@@ -18,6 +18,8 @@ const HomePage = () => {
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [errorBookings, setErrorBookings] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const navigate = useNavigate();
   useAuth();
 
@@ -64,8 +66,10 @@ const HomePage = () => {
       await appointmentService.createAppointment({
         date: selectedDate,
         time: selectedTime,
-        guests, // Đúng tên trường
-        note, // Đúng tên trường
+        guests, 
+        note, 
+        customerName,
+        customerPhone
       });
       // Sau khi đặt bàn thành công, chuyển hướng sang bookings
       navigate("/bookings");
@@ -239,6 +243,32 @@ const HomePage = () => {
                     <option value="18:30">18:30</option>
                     <option value="19:00">19:00</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Tên khách hàng <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-800 font-semibold mb-2">
+                    Số điện thoại <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                    required
+                    pattern="[0-9]{10,11}"
+                    placeholder="Nhập số điện thoại"
+                  />
                 </div>
               </div>
 

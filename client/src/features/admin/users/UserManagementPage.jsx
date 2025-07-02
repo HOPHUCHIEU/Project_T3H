@@ -118,7 +118,7 @@ const UserManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 pb-12">
+    <div className="min-h-screen bg-gray-100 pt-10 pb-12">
       {message && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg animate-fadeIn">
           {message}

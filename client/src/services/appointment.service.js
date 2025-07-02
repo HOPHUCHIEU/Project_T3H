@@ -17,8 +17,8 @@ export const appointmentService = {
   },
 
   // Tạo lịch hẹn mới (đặt bàn)
-  async createAppointment({ date, time, guests, note }) {
-    const payload = { date, time, guests, note };
+  async createAppointment({ date, time, guests, note, customerName, customerPhone }) {
+    const payload = { date, time, guests, note, customerName, customerPhone };
     const response = await api.post('/appointments', payload);
     return response.data;
   },
