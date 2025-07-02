@@ -4,18 +4,15 @@ import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto/create-appointment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-// Định nghĩa kiểu cho query
 interface FindAllAppointmentsQuery {
   page?: number;
   limit?: number;
   status?: string;
 }
 
-// Định nghĩa kiểu cho user payload từ request
 interface IUserPayload {
-  userId: string;
-  phone: string;
-  // ... (tuỳ JWT payload)
+  id: string; // Lấy từ token payload
+  // các trường khác nếu có
 }
 
 @Controller('appointments')
@@ -28,16 +25,22 @@ export class AppointmentsController {
     return this.appointmentsService.findAll(query);
   }
 
+  // Lấy lịch hẹn của chính user (dựa vào id trong token)
   @UseGuards(JwtAuthGuard)
   @Get('my')
   async findMy(@Request() req: { user: IUserPayload }) {
-    const customerPhone = req.user?.phone;
-    return this.appointmentsService.findMyAppointments(customerPhone);
+    const userId = req.user?.id;
+    return this.appointmentsService.findMyAppointments(userId);
   }
 
+  // Khi tạo lịch hẹn, gắn luôn userId vào (nếu đăng nhập)
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createDto: CreateAppointmentDto) {
-    return this.appointmentsService.create(createDto);
+  async create(@Body() createDto: CreateAppointmentDto, @Request() req: { user: IUserPayload }) {
+    return this.appointmentsService.create({
+      ...createDto,
+      userId: req.user?.id
+    });
   }
 
   @Get(':id')

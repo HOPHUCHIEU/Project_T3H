@@ -11,7 +11,8 @@ export class AppointmentsService {
     @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
   ) {}
 
-  async create(createAppointmentDto: CreateAppointmentDto): Promise<Appointment> {
+  // Thêm userId khi tạo lịch (nếu có)
+  async create(createAppointmentDto: CreateAppointmentDto & { userId?: string }): Promise<Appointment> {
     const created = new this.appointmentModel(createAppointmentDto);
     return created.save();
   }
@@ -35,8 +36,9 @@ export class AppointmentsService {
     return appt;
   }
 
-  async findMyAppointments(customerPhone: string) {
-    return this.appointmentModel.find({ customerPhone }).sort({ createdAt: -1 });
+  // Filter lịch theo userId (chuẩn)
+  async findMyAppointments(userId: string) {
+    return this.appointmentModel.find({ userId }).sort({ createdAt: -1 });
   }
 
   async update(id: string, updateDto: UpdateAppointmentDto) {

@@ -29,6 +29,9 @@ export class Appointment {
 
   @Prop({ type: String })
   customerEmail: string;
+
+  @Prop({ type: String })
+  userId: string;
 }
 
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);
