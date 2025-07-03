@@ -1,30 +1,23 @@
-// import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../../context/AuthContext'
 import { Navigate } from 'react-router-dom'
+import { userService } from '../../../services/user.service'
 
 const DashboardPage = () => {
   const { user } = useAuth()
-  // const [userCount, setUserCount] = useState(0)
+  const [userCount, setUserCount] = useState(0)
 
-  // useEffect(() => {
-  //   const fetchUserCount = async () => {
-  //     try {
-  //       const token = localStorage.getItem('token') // hoặc lấy từ context nếu có
-  //       const res = await fetch('http://localhost:3000/users/count', {
-  //         headers: { Authorization: `Bearer ${token}` }
-  //       })
-  //       if (res.ok) {
-  //         const count = await res.json()
-  //         setUserCount(count)
-  //       } else {
-  //         setUserCount(0)
-  //       }
-  //     } catch {
-  //       setUserCount(0)
-  //     }
-  //   }
-  //   if (user) fetchUserCount()
-  // }, [user])
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const count = await userService.getTotalUserCount()
+        setUserCount(count)
+      } catch {
+        setUserCount(0)
+      }
+    }
+    if (user) fetchUserCount()
+  }, [user])
 
   // Kiểm tra đăng nhập
   if (!user) {
@@ -40,7 +33,7 @@ const DashboardPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-blue-50 p-6 rounded-lg">
               <h3 className="text-lg font-medium text-blue-800">Tổng số người dùng</h3>
-              {/* <p className="text-3xl font-bold text-blue-600">{userCount}</p> */}
+              <p className="text-3xl font-bold text-blue-600">{userCount}</p>
             </div>
             <div className="bg-green-50 p-6 rounded-lg">
               <h3 className="text-lg font-medium text-green-800">Tổng số món ăn</h3>

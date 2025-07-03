@@ -169,9 +169,19 @@ const UserManagementPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>{user.role}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-4" onClick={() => handleEditUser(user)}>Sửa</button>
-                      <button className="text-red-600 hover:text-red-900" onClick={() => handleDeleteUser(user._id)}>Xóa</button>
+                    <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded font-semibold transition"
+                        onClick={() => handleEditUser(user)}
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded font-semibold transition"
+                        onClick={() => handleDeleteUser(user._id)}
+                      >
+                        Xóa
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -179,18 +189,47 @@ const UserManagementPage = () => {
             </table>
           </div>
           {/* Phân trang */}
-          <div className="flex justify-center items-center gap-2 py-4">
-            <button
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >Trước</button>
-            <span>Trang {page} / {totalPages}</span>
-            <button
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-            >Sau</button>
+          <div className="px-6 py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Hiển thị{' '}
+                  <span className="font-medium">{(page - 1) * limit + 1}</span>{' '}
+                  đến{' '}
+                  <span className="font-medium">{Math.min(page * limit, users.length)}</span>{' '}
+                  trong số <span className="font-medium">{users.length}</span> người dùng
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  className="px-3 py-1 border rounded-md hover:bg-gray-50"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={page === 1}
+                >
+                  Trước
+                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`px-3 py-1 border rounded-md ${
+                      page === i + 1
+                        ? 'bg-red-100 text-red-700 font-bold'
+                        : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => setPage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className="px-3 py-1 border rounded-md hover:bg-gray-50"
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={page === totalPages || totalPages === 0}
+                >
+                  Sau
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -24,5 +24,10 @@ export const userService = {
   async registerUser(userData) {
     const response = await api.post('/users/register', userData);
     return response.data;
+  },
+
+  async getTotalUserCount() {
+    const response = await api.get('/users/count');
+    return response.data;
   }
 };
