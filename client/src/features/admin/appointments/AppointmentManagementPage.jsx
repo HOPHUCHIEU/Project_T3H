@@ -111,7 +111,7 @@ const AppointmentManagementPage = () => {
   const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 pb-12">
+    <div className="min-h-screen bg-gray-100 pt-7 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg">
           {/* Header */}
@@ -317,7 +317,7 @@ const AppointmentManagementPage = () => {
               </div>
             </div>
           </div>
-          
+
         </div>
       </div>
       {/* Modal chi tiết lịch hẹn */}

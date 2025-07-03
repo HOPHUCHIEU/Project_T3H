@@ -1,8 +1,10 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
-import { 
-  Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req 
+import {
+  Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
@@ -10,23 +12,28 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
-import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
-  // Đăng ký user (chỉ Admin mới được phép)
+  // Đăng ký tài khoản mới - PUBLIC (người dùng tự đăng ký)
   @Post('register')
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
+  // Đăng ký (tạo user) chỉ dành cho ADMIN
+  @Post('admin-create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  create(@Body() createUserDto: CreateUserDto) {
+  async adminCreateUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   // Đăng nhập user
   @Post('login')
-  login(@Body() loginUserDto: LoginUserDto) {
+  async login(@Body() loginUserDto: LoginUserDto) {
     return this.userService.login(loginUserDto);
   }
 
@@ -62,16 +69,17 @@ export class UsersController {
     return this.userService.remove(id);
   }
 
+  // Lấy thông tin user hiện tại (tự xem/me)
   @Get('me')
-@UseGuards(JwtAuthGuard)
-async getMe(@Req() req) {
-  return this.userService.findOne(req.user.id); // SỬA LẠI ĐÚNG KEY
-}
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Req() req) {
+    return this.userService.findOne(req.user.id);
+  }
 
-@Patch('me')
-@UseGuards(JwtAuthGuard)
-async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {
-  return this.userService.update(req.user.id, updateUserDto); // SỬA LẠI ĐÚNG KEY
-}
-
+  // Cập nhật thông tin user hiện tại (tự sửa/me)
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(req.user.id, updateUserDto);
+  }
 }
