@@ -17,17 +17,9 @@ import { Roles } from './decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
-  // Đăng ký tài khoản mới - PUBLIC (người dùng tự đăng ký)
+  // Đăng ký tài khoản mới (public)
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  // Đăng ký (tạo user) chỉ dành cho ADMIN
-  @Post('admin-create')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  async adminCreateUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
@@ -37,7 +29,15 @@ export class UsersController {
     return this.userService.login(loginUserDto);
   }
 
-  // Lấy danh sách tất cả user (chỉ Admin)
+  // Admin tạo user mới (chỉ admin, không chọn role, chỉ chọn status/phone)
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async adminCreateUser(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
+  // Lấy danh sách tất cả user (admin)
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -45,7 +45,7 @@ export class UsersController {
     return this.userService.findAll();
   }
 
-  // Lấy thông tin user theo id (chỉ Admin)
+  // Lấy thông tin user theo id (admin)
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -53,7 +53,7 @@ export class UsersController {
     return this.userService.findOne(id);
   }
 
-  // Cập nhật thông tin user theo id (chỉ Admin)
+  // Admin cập nhật thông tin user (gồm status: active/blocked)
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -61,7 +61,7 @@ export class UsersController {
     return this.userService.update(id, updateUserDto);
   }
 
-  // Xóa user theo id (chỉ Admin)
+  // Admin xóa user
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -69,14 +69,12 @@ export class UsersController {
     return this.userService.remove(id);
   }
 
-  // Lấy thông tin user hiện tại (tự xem/me)
+  // Người dùng tự xem và sửa thông tin cá nhân (profile)
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@Req() req) {
     return this.userService.findOne(req.user.id);
   }
-
-  // Cập nhật thông tin user hiện tại (tự sửa/me)
   @Patch('me')
   @UseGuards(JwtAuthGuard)
   async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {

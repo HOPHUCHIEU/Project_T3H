@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -15,7 +16,13 @@ export class User {
   password: string;
 
   @Prop({ default: 'user' })
-  role: string;
+  role: string; // mặc định là user
+
+  @Prop({ unique: true, sparse: true })
+  phone: string;
+
+  @Prop({ default: 'active' }) // 'active' | 'blocked'
+  status: string;
 
   @Prop({ default: Date.now })
   createdAt: Date;

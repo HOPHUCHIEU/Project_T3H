@@ -10,14 +10,20 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     if (!requiredRoles || requiredRoles.length === 0) {
-      return true;
+      return true; // không yêu cầu role -> cho qua
     }
     const { user } = context.switchToHttp().getRequest();
     if (!user || typeof user.role !== 'string') {
-      // Nếu chưa có user hoặc role, trả về 403, KHÔNG lỗi 500 nữa
       throw new ForbiddenException('Bạn không có quyền truy cập!');
+    }
+    // Nếu muốn block user không cho thao tác (dù là admin/user) khi đã bị khóa, thêm check status:
+    if (user.status && user.status === 'blocked') {
+      throw new ForbiddenException('Tài khoản của bạn đã bị khóa!');
     }
     return requiredRoles.includes(user.role);
   }

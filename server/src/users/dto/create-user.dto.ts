@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsString, Matches, IsIn } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -9,13 +9,18 @@ export class CreateUserDto {
   @IsNotEmpty()
   email: string;
 
+  @IsOptional()
+  @IsString()
+  @Matches(/^0\d{9,10}$/, { message: 'Phone không hợp lệ' })
+  phone?: string;
+
   @IsNotEmpty()
   @MinLength(6)
   password: string;
 
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsIn(['active', 'blocked'])
+  status?: string; // <== THÊM DÒNG NÀY
 }
 
 export class LoginUserDto {
