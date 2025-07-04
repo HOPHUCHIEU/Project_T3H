@@ -75,6 +75,7 @@ export class UsersController {
   async getMe(@Req() req) {
     return this.userService.findOne(req.user.id);
   }
+  
   @Patch('me')
   @UseGuards(JwtAuthGuard)
   async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {

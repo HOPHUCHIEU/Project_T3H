@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { userService } from '../../../services/user.service'
 
-const initialForm = { username: '', email: '', password: '', role: 'user' }
+const initialForm = { username: '', email: '', password: '', phone: '' }
 
 const UserManagementPage = () => {
   const { user } = useAuth()
@@ -25,7 +25,6 @@ const UserManagementPage = () => {
   }, [page, search])
 
   useEffect(() => {
-    // Auto scroll to top of table body when page change
     if (tableBodyRef.current) {
       tableBodyRef.current.scrollTop = 0
     }
@@ -75,7 +74,12 @@ const UserManagementPage = () => {
   }
 
   const handleEditUser = (user) => {
-    setForm({ username: user.username, email: user.email, password: '', role: user.role })
+    setForm({ 
+      username: user.username, 
+      email: user.email, 
+      phone: user.phone || '', 
+      password: '' 
+    })
     setEditId(user._id)
     setShowModal(true)
   }
@@ -104,7 +108,7 @@ const UserManagementPage = () => {
         setMessage('Cập nhật người dùng thành công!')
         toast.success('Cập nhật thành công!')
       } else {
-        await userService.registerUser(form);
+        await userService.registerUser(submitForm);
         setMessage('Thêm người dùng thành công!')
         toast.success('Thêm người dùng thành công!')
       }
@@ -118,7 +122,18 @@ const UserManagementPage = () => {
     }
   }
 
-  // Tính lại mảng user hiện tại theo trang
+  // Khóa/mở tài khoản
+  const handleToggleStatus = async (user) => {
+    try {
+      const newStatus = user.status === 'active' ? 'blocked' : 'active'
+      await userService.updateUser(user._id, { status: newStatus })
+      toast.success(`Đã ${newStatus === 'active' ? 'mở khóa' : 'khóa'} tài khoản!`)
+      fetchUsers()
+    } catch {
+      toast.error('Cập nhật trạng thái thất bại!')
+    }
+  }
+
   const pageUsers = users.slice((page - 1) * limit, page * limit)
 
   return (
@@ -150,55 +165,61 @@ const UserManagementPage = () => {
           </div>
           {/* Bảng danh sách user */}
           <div className="overflow-x-auto">
-            {/* <div className="max-h-[500px] overflow-y-auto" ref={tableBodyRef}> */}
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">STT</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tên người dùng</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Số điện thoại</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {loading ? (
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">STT</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tên người dùng</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Vai trò</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                    <td colSpan={6} className="text-center py-10 text-lg text-gray-500">Đang tải...</td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={5} className="text-center py-10 text-lg text-gray-500">Đang tải...</td>
-                    </tr>
-                  ) : pageUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="text-center py-10 text-lg text-gray-500">Không có người dùng</td>
-                    </tr>
-                  ) : pageUsers.map((user, idx) => (
-                    <tr key={user._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900 font-medium">{(page - 1) * limit + idx + 1}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">{user.username}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{user.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'}`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                        <button
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg font-semibold shadow"
-                          onClick={() => handleEditUser(user)}
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg font-semibold shadow"
-                          onClick={() => handleDeleteUser(user._id)}
-                        >
-                          Xóa
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            {/* </div> */}
+                ) : pageUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-10 text-lg text-gray-500">Không có người dùng</td>
+                  </tr>
+                ) : pageUsers.map((user, idx) => (
+                  <tr key={user._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900 font-medium">{(page - 1) * limit + idx + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">{user.username}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{user.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{user.phone || <span className="text-gray-400">---</span>}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-red-500'}`}>
+                        {user.status === 'active' ? 'Đang hoạt động' : 'Đã khóa'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg font-semibold shadow"
+                        onClick={() => handleEditUser(user)}
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg font-semibold shadow"
+                        onClick={() => handleDeleteUser(user._id)}
+                      >
+                        Xóa
+                      </button>
+                      <button
+                        className={`px-3 py-1 rounded-lg font-semibold shadow ${user.status === 'active' ? 'bg-gray-400 text-white hover:bg-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                        onClick={() => handleToggleStatus(user)}
+                      >
+                        {user.status === 'active' ? 'Khóa' : 'Mở khóa'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           {/* Phân trang */}
           <div className="px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between sticky bottom-0">
@@ -247,18 +268,16 @@ const UserManagementPage = () => {
               <label className="text-gray-700 font-medium">Email</label>
               <input type="email" className="border p-3 rounded-lg focus:ring-2 focus:ring-green-400" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
             </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-medium">Số điện thoại</label>
+              <input type="text" className="border p-3 rounded-lg focus:ring-2 focus:ring-green-400" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="VD: 098xxxxxxx" />
+            </div>
             {!editId && (
               <div className="flex flex-col gap-2">
                 <label className="text-gray-700 font-medium">Mật khẩu</label>
                 <input type="password" className="border p-3 rounded-lg focus:ring-2 focus:ring-green-400" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <label className="text-gray-700 font-medium">Vai trò</label>
-              <select className="border p-3 rounded-lg focus:ring-2 focus:ring-green-400" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-                <option value="user">User</option>
-              </select>
-            </div>
             <div className="flex justify-end gap-2 mt-4">
               <button type="button" className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" onClick={() => setShowModal(false)}>Hủy</button>
               <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow">{editId ? 'Lưu' : 'Thêm'}</button>
