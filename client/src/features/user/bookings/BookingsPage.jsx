@@ -9,7 +9,7 @@ const statusMap = {
   confirmed: { text: 'Đã xác nhận', className: 'bg-green-100 text-green-800' }, // fallback
   pending: { text: 'Chờ xác nhận', className: 'bg-yellow-100 text-yellow-800' },
   cancelled: { text: 'Đã hủy', className: 'bg-red-100 text-red-800' },
-  completed: { text: 'Đã hoàn thành', className: 'bg-blue-100 text-blue-800' },
+  // completed: { text: 'Đã hoàn thành', className: 'bg-blue-100 text-blue-800' },
 };
 
 const BookingsPage = () => {

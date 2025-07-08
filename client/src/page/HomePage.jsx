@@ -474,10 +474,10 @@ const HomePage = () => {
                     text: "Đã hủy",
                     className: "bg-red-100 text-red-800",
                   },
-                  completed: {
-                    text: "Đã hoàn thành",
-                    className: "bg-blue-100 text-blue-800",
-                  },
+                  // completed: {
+                  //   text: "Đã hoàn thành",
+                  //   className: "bg-blue-100 text-blue-800",
+                  // },
                 };
                 const statusObj =
                   statusMap[booking.status] || {

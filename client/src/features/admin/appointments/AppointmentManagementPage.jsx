@@ -74,8 +74,8 @@ const AppointmentManagementPage = () => {
         return "Đã xác nhận";
       case "cancelled":
         return "Đã hủy";
-      case "completed":
-        return "Hoàn thành";
+      // case "completed":
+      //   return "Hoàn thành";
       default:
         return status;
     }
@@ -126,7 +126,7 @@ const AppointmentManagementPage = () => {
                 <option value="all">Tất cả trạng thái</option>
                 <option value="pending">Chờ xác nhận</option>
                 <option value="approved">Đã xác nhận</option>
-                <option value="completed">Hoàn thành</option>
+                {/* <option value="completed">Hoàn thành</option> */}
                 <option value="cancelled">Đã hủy</option>
               </select>
               <button
