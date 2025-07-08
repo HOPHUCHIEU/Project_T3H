@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Header from '../Header';
-import { MdDashboard, MdPeople, MdEventNote } from 'react-icons/md';
+import { MdDashboard, MdPeople, MdEventNote, MdRestaurantMenu  } from 'react-icons/md';
 
 const AdminLayout = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -49,8 +49,9 @@ const AdminLayout = () => {
           <nav className="p-4">
             <ul className="space-y-3">
               <SidebarItem to="/admin/dashboard" label="Dashboard" icon={MdDashboard} isExpanded={isExpanded} />
-              <SidebarItem to="/admin/users" label="Users" icon={MdPeople} isExpanded={isExpanded} />
+              <SidebarItem to="/admin/users" label="User" icon={MdPeople} isExpanded={isExpanded} />
               <SidebarItem to="/admin/appointments" label="Appointments" icon={MdEventNote} isExpanded={isExpanded} />
+              <SidebarItem to="/admin/menu" label="Menu" icon={MdRestaurantMenu} isExpanded={isExpanded} />
             </ul>
           </nav>
         </aside>

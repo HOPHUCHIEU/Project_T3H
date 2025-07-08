@@ -3,26 +3,29 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
-// Load environment variables
+// Load biến môi trường từ .env
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  // Cấu hình CORS chi tiết
+  // const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Bật CORS cho FE (sửa lại origin đúng domain khi deploy thực tế)
   app.enableCors({
-    origin: true, // Hoặc chỉ định domain cụ thể: 'http://localhost:5173'
+    origin: true, // Hoặc ['http://localhost:5173']
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  
-  // Cấu hình Validation Pipe
+
+  // Sử dụng ValidationPipe toàn cục cho DTO
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Chỉ cho phép các properties được định nghĩa trong DTO
-      forbidNonWhitelisted: true, // Throw error nếu có properties không được định nghĩa
-      transform: true, // Tự động transform types
+      whitelist: true, // Chỉ chấp nhận các trường được khai báo trong DTO
+      forbidNonWhitelisted: true, // Nếu gửi lên trường lạ sẽ báo lỗi
+      transform: true, // Tự động convert type cho DTO
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -35,6 +38,11 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Phục vụ file tĩnh (hình ảnh upload) ở thư mục /uploads
+  app.useStaticAssets(path.join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

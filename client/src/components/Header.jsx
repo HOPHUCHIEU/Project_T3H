@@ -115,6 +115,10 @@ const Header = () => {
                       />
                       <DropdownItem
                         to="/admin/appointments"
+                        text="Quản lý lịch hẹn"
+                      />
+                      <DropdownItem
+                        to="/admin/menu"
                         text="Quản lý thực đơn"
                       />
                     </>

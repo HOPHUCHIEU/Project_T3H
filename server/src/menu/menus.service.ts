@@ -35,4 +35,19 @@ export class MenusService {
     const res = await this.menuModel.findByIdAndDelete(id).exec();
     if (!res) throw new NotFoundException('Không tìm thấy món ăn!');
   }
+
+  async countAll(): Promise<number> {
+    return this.menuModel.countDocuments({});
+  }
+
+  async findAllAll(page?: string, limit?: string): Promise<Menu[]> {
+  // Nếu muốn phân trang
+  const p = Number(page) || 1;
+  const l = Number(limit) || 100; // mặc định trả 100 món, có thể đổi tùy ý
+  return this.menuModel.find({})
+    .skip((p - 1) * l)
+    .limit(l)
+    .exec();
+}
+
 }
