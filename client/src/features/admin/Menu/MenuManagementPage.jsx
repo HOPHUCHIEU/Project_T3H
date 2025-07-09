@@ -10,7 +10,6 @@ import {
   updateMenu,
 } from "../../../services/menu.service";
 
-// Dùng cho filter
 const CATEGORY_LIST = [
   { label: "Tất cả danh mục", value: "" },
   { label: "Món chính", value: "main" },
@@ -23,6 +22,8 @@ const STATUS_LIST = [
   { label: "Còn hàng", value: "available" },
   { label: "Hết hàng", value: "unavailable" },
 ];
+
+const BASE_URL = "http://localhost:3000"; // Sửa lại nếu deploy server khác
 
 const MenuManagementPage = () => {
   const { user } = useAuth();
@@ -47,8 +48,10 @@ const MenuManagementPage = () => {
     status: "",
     keyword: "",
   });
-  // const [imagePreviewUrl, setImagePreviewUrl] = useState('');
-  const BASE_URL = "http://localhost:3000";
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 4;
 
   // Lấy menu khi load trang
   useEffect(() => {
@@ -60,11 +63,15 @@ const MenuManagementPage = () => {
       .finally(() => setLoading(false));
   }, [token]);
 
+  // Reset về trang 1 mỗi khi filter thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Xử lý toast thông báo ở góc phải trên
   const notify = (msg, type = "success") =>
     toast[type](msg, { position: "top-right", autoClose: 2200 });
 
@@ -86,7 +93,6 @@ const MenuManagementPage = () => {
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
-  // Khi chọn ảnh
   const handleImageChange = (e) => {
     setImageFile(e.target.files[0]);
   };
@@ -126,7 +132,7 @@ const MenuManagementPage = () => {
     }
   };
 
-  // Bắt đầu sửa món
+  // Sửa món ăn
   const handleStartEdit = (item) => {
     setEditId(item._id);
     setForm({
@@ -141,7 +147,6 @@ const MenuManagementPage = () => {
     setShowEditForm(true);
   };
 
-  // Sửa món ăn
   const handleEditMenu = async (e) => {
     e.preventDefault();
     setAdding(true);
@@ -189,6 +194,12 @@ const MenuManagementPage = () => {
         item.name?.toLowerCase().includes(filter.keyword.toLowerCase()))
   );
 
+  // Pagination
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMenus = filteredMenus.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredMenus.length / ITEMS_PER_PAGE);
+
   // Xử lý lỗi ảnh không tồn tại
   const handleImgError = (e) => {
     if (e.target.src !== window.location.origin + "/no-image.png") {
@@ -198,7 +209,7 @@ const MenuManagementPage = () => {
 
   // Giao diện modal (thêm/sửa) dùng chung
   const renderFormModal = (onSubmit, isEdit = false) => (
-    <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-30 z-50">
       <form
         className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full relative"
         onSubmit={onSubmit}
@@ -311,7 +322,6 @@ const MenuManagementPage = () => {
             />
           )}
         </div>
-
         <div className="flex justify-end">
           <button
             type="submit"
@@ -334,19 +344,20 @@ const MenuManagementPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-12">
-  <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="bg-white rounded-2xl shadow p-4 md:p-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-        <h1 className="text-2xl font-semibold text-gray-900">Quản lý thực đơn</h1>
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          onClick={() => setShowAddForm(true)}
-        >
-          Thêm món ăn mới
-        </button>
-      </div>
-
+    <div className="min-h-screen bg-gray-100 pt-7 pb-12">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow p-4 md:p-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Quản lý thực đơn
+            </h1>
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              onClick={() => setShowAddForm(true)}
+            >
+              Thêm món ăn mới
+            </button>
+          </div>
           {/* Bộ lọc */}
           <div className="flex flex-wrap items-center gap-3 mb-6 w-full">
             <select
@@ -390,16 +401,16 @@ const MenuManagementPage = () => {
           {loading ? (
             <div className="p-8 text-center">Đang tải dữ liệu...</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8 py-6">
-              {filteredMenus.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 py-6">
+              {paginatedMenus.length === 0 ? (
                 <div className="col-span-4 text-center text-gray-500">
                   Không có món ăn nào!
                 </div>
               ) : (
-                filteredMenus.map((item) => (
+                paginatedMenus.map((item) => (
                   <div
                     key={item._id}
-                    className="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col justify-between transition-transform hover:scale-[1.03] hover:shadow-lg duration-150"
+                    className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col justify-between transition-transform hover:scale-[1.03] hover:shadow-lg hover:border-blue-400 duration-150"
                   >
                     <img
                       src={
@@ -459,6 +470,41 @@ const MenuManagementPage = () => {
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6 space-x-2">
+              <button
+                className="px-3 py-1 border rounded-md bg-gray-50 text-gray-700 hover:bg-gray-200"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Trước
+              </button>
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`px-3 py-1 border rounded-md ${
+                    currentPage === idx + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-gray-800 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setCurrentPage(idx + 1)}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+              <button
+                className="px-3 py-1 border rounded-md bg-gray-50 text-gray-700 hover:bg-gray-200"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+              >
+                Sau
+              </button>
             </div>
           )}
         </div>
