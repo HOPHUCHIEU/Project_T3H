@@ -12,7 +12,7 @@ export const userService = {
   },
 
   async updateUser(id, userData) {
-  const response = await api.patch(`/users/${id}`, userData); // dùng PATCH thay vì PUT
+  const response = await api.patch(`/users/${id}`, userData);
   return response.data;
   },
 

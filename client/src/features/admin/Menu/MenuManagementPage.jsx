@@ -47,6 +47,8 @@ const MenuManagementPage = () => {
     status: "",
     keyword: "",
   });
+  // const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+  const BASE_URL = "http://localhost:3000";
 
   // Lấy menu khi load trang
   useEffect(() => {
@@ -189,7 +191,9 @@ const MenuManagementPage = () => {
 
   // Xử lý lỗi ảnh không tồn tại
   const handleImgError = (e) => {
-    e.target.src = "/no-image.png"; // để ảnh mặc định, tạo ảnh này trong /public
+    if (e.target.src !== window.location.origin + "/no-image.png") {
+      e.target.src = "/no-image.png";
+    }
   };
 
   // Giao diện modal (thêm/sửa) dùng chung
@@ -330,23 +334,21 @@ const MenuManagementPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-4 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Quản lý thực đơn
-            </h1>
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-              onClick={() => setShowAddForm(true)}
-            >
-              Thêm món ăn mới
-            </button>
-          </div>
+    <div className="min-h-screen bg-gray-100 pb-12">
+  <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-white rounded-2xl shadow p-4 md:p-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Quản lý thực đơn</h1>
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+          onClick={() => setShowAddForm(true)}
+        >
+          Thêm món ăn mới
+        </button>
+      </div>
 
           {/* Bộ lọc */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3 mb-6 w-full">
             <select
               className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               value={filter.category}
@@ -388,7 +390,7 @@ const MenuManagementPage = () => {
           {loading ? (
             <div className="p-8 text-center">Đang tải dữ liệu...</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8 py-6">
               {filteredMenus.length === 0 ? (
                 <div className="col-span-4 text-center text-gray-500">
                   Không có món ăn nào!
@@ -397,10 +399,14 @@ const MenuManagementPage = () => {
                 filteredMenus.map((item) => (
                   <div
                     key={item._id}
-                    className="bg-white border rounded-lg shadow-sm overflow-hidden flex flex-col justify-between"
+                    className="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col justify-between transition-transform hover:scale-[1.03] hover:shadow-lg duration-150"
                   >
                     <img
-                      src={item.image}
+                      src={
+                        item.image?.startsWith("http")
+                          ? item.image
+                          : `${BASE_URL}${item.image}`
+                      }
                       alt={item.name}
                       className="w-full h-40 object-cover"
                       onError={handleImgError}
