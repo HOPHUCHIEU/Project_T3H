@@ -21,6 +21,12 @@ export class Menu extends Document {
 
   @Prop({ default: false })
   isSpecial?: boolean;
+
+  @Prop({ default: '' }) 
+  category?: string;
+
+  @Prop({ default: 'available' }) 
+  status?: string;
 }
 
 export const MenuSchema = SchemaFactory.createForClass(Menu);
