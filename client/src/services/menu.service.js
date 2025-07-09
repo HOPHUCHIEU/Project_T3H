@@ -38,3 +38,23 @@ export const countMenus = async (token) => {
   return res.data;
 };
 
+// Admin: Lấy tất cả menu (cho quản trị)
+export const fetchAllMenus = async (token) => {
+  const res = await axios.get('/menus', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+};
+
+// Admin: Upload ảnh
+export const uploadMenuImage = async (file, token) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await axios.post('/menus/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return res.data;
+};

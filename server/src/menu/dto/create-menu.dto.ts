@@ -23,4 +23,12 @@ export class CreateMenuDto {
   @IsBoolean()
   @IsOptional()
   isSpecial?: boolean;
+
+  @IsString()
+  @IsOptional()
+  category?: string;  
+
+  @IsString()
+  @IsOptional()
+  status?: string; 
 }
