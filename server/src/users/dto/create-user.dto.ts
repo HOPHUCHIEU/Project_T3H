@@ -20,7 +20,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsIn(['active', 'blocked'])
-  status?: string; // <== THÊM DÒNG NÀY
+  status?: string;
 }
 
 export class LoginUserDto {

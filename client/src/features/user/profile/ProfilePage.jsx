@@ -128,7 +128,7 @@ const Profile = () => {
               Cập nhật thông tin
             </button>
             {showEdit && (
-              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="fixed inset-0 bg-red bg-opacity-40 flex items-center justify-center z-50">
                 <form
                   className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative"
                   onSubmit={handleUpdate}

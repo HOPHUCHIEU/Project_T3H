@@ -15,9 +15,13 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [myBookings, setMyBookings] = useState([]);
-  const [loadingBookings, setLoadingBookings] = useState(true);
-  const [errorBookings, setErrorBookings] = useState("");
+
+  //hiển thị đặt lịch hẹn trên homepage
+  // const [myBookings, setMyBookings] = useState([]);
+  // const [loadingBookings, setLoadingBookings] = useState(true);
+  // const [errorBookings, setErrorBookings] = useState("");
+  //end hiển thị đặt lịch hẹn trên homepage
+
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const navigate = useNavigate();
@@ -37,22 +41,22 @@ const HomePage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    // Lấy lịch đặt bàn của user
-    const fetchBookings = async () => {
-      setLoadingBookings(true);
-      setErrorBookings("");
-      try {
-        const data = await appointmentService.getMyAppointments();
-        setMyBookings(data);
-      } catch {
-        setErrorBookings("Không thể tải lịch đặt bàn!");
-      } finally {
-        setLoadingBookings(false);
-      }
-    };
-    fetchBookings();
-  }, []);
+  // useEffect(() => {
+  //   // Lấy lịch đặt bàn của user
+  //   const fetchBookings = async () => {
+  //     setLoadingBookings(true);
+  //     setErrorBookings("");
+  //     try {
+  //       const data = await appointmentService.getMyAppointments();
+  //       setMyBookings(data);
+  //     } catch {
+  //       setErrorBookings("Không thể tải lịch đặt bàn!");
+  //     } finally {
+  //       setLoadingBookings(false);
+  //     }
+  //   };
+  //   fetchBookings();
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -439,7 +443,7 @@ const HomePage = () => {
         </div>
       </section>
       {/* lịch đặt bàn */}
-      <section className="py-20 bg-white">
+      {/* <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
             Lịch đặt bàn của bạn
@@ -523,7 +527,7 @@ const HomePage = () => {
             </div>
           )}
         </div>
-      </section>
+      </section> */}
       {/* lịch đặt bàn */}
       <Outlet />
       <Footer />
