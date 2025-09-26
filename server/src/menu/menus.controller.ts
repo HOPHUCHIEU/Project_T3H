@@ -34,6 +34,12 @@ import * as path from 'path';
 export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
+  //lấy tất cả menu ra trang chủ (public, không cần quyền admin)
+  @Get('all')
+  findAllPublic(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.menusService.findAllAll(page, limit);
+  }
+
   // 1. Admin: Tạo mới món ăn
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

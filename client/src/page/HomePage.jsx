@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { appointmentService } from "../services/appointment.service";
 import { useAuth } from "../context/AuthContext";
-import foods from "../data/foods";
+// import foods from "../data/foods";
 
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -86,6 +86,29 @@ const HomePage = () => {
   const handleFoodClick = (slug) => {
     navigate(`/food/${slug}`);
   };
+
+  const [foods, setFoods] = useState([]);
+  const [loadingFoods, setLoadingFoods] = useState(true);
+  const [errorFoods, setErrorFoods] = useState("");
+
+  useEffect(() => {
+      setLoadingFoods(true);
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/menus/all`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            setFoods(data);
+          } else {
+            setFoods([]);
+          }
+          setLoadingFoods(false);
+        })
+        .catch(() => {
+          setErrorFoods("Không thể tải danh sách món ăn!");
+          setFoods([]);
+          setLoadingFoods(false);
+        });
+  }, []);
 
   const filteredFoods = foods.filter((food) =>
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -375,21 +398,27 @@ const HomePage = () => {
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredFoods.length === 0 ? (
-              <div className="col-span-full text-center text-gray-500">
-                Không tìm thấy món ăn phù hợp.
-              </div>
+            {loadingFoods ? (
+              <div className="col-span-full text-center text-gray-500">Đang tải danh sách món ăn...</div>
+            ) : errorFoods ? (
+              <div className="col-span-full text-center text-red-500">{errorFoods}</div>
+            ) : filteredFoods.length === 0 ? (
+              <div className="col-span-full text-center text-gray-500">Không tìm thấy món ăn phù hợp.</div>
             ) : (
               filteredFoods.map((food, idx) => (
                 <article
-                  key={idx}
+                  key={food._id || idx}
                   className="bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
                   itemScope
                   itemType="http://schema.org/Product"
                   onClick={() => handleFoodClick(food.slug)}
                 >
                   <img
-                    src={food.image}
+                    src={food.image
+                      ? food.image.startsWith('/uploads/menus/')
+                        ? `${import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'}${food.image}`
+                        : food.image
+                      : '/vite.svg'}
                     alt={food.name}
                     className="h-48 w-full object-cover"
                     loading="lazy"
@@ -411,7 +440,7 @@ const HomePage = () => {
                       >
                         <meta itemProp="priceCurrency" content="VND" />
                         <span itemProp="price">
-                          ₫{food.price.toLocaleString()}
+                          {food.price ? `₫${food.price.toLocaleString()}` : ''}
                         </span>
                       </span>
                       <span className="ml-auto flex items-center text-yellow-500">
@@ -432,9 +461,6 @@ const HomePage = () => {
                     >
                       {food.location}
                     </div>
-                    {/* <span className="mt-auto inline-block bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-lg font-semibold text-center hover:from-red-600 hover:to-red-800 transition-colors">
-                      Mua ngay
-                    </span> */}
                   </div>
                 </article>
               ))
@@ -442,93 +468,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      {/* lịch đặt bàn */}
-      {/* <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
-            Lịch đặt bàn của bạn
-          </h2>
-          {loadingBookings ? (
-            <div className="text-center py-8 text-lg text-gray-500">
-              Đang tải dữ liệu...
-            </div>
-          ) : errorBookings ? (
-            <div className="text-center py-8 text-red-500">{errorBookings}</div>
-          ) : myBookings.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              Bạn chưa có lịch đặt bàn nào.
-            </div>
-          ) : (
-            <div className="space-y-6 max-w-2xl mx-auto">
-              {myBookings.map((booking) => {
-                const statusMap = {
-                  approved: {
-                    text: "Đã xác nhận",
-                    className: "bg-green-100 text-green-800",
-                  },
-                  confirmed: {
-                    text: "Đã xác nhận",
-                    className: "bg-green-100 text-green-800",
-                  },
-                  pending: {
-                    text: "Chờ xác nhận",
-                    className: "bg-yellow-100 text-yellow-800",
-                  },
-                  cancelled: {
-                    text: "Đã hủy",
-                    className: "bg-red-100 text-red-800",
-                  },
-                  // completed: {
-                  //   text: "Đã hoàn thành",
-                  //   className: "bg-blue-100 text-blue-800",
-                  // },
-                };
-                const statusObj =
-                  statusMap[booking.status] || {
-                    text: booking.status,
-                    className: "bg-gray-100 text-gray-800",
-                  };
-                return (
-                  <motion.div
-                    key={booking._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="border rounded-lg p-6 hover:shadow-md transition-shadow bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Đặt bàn {booking.guests} người
-                        </h3>
-                        <p className="text-gray-600">
-                          Ngày:{" "}
-                          {booking.date
-                            ? new Date(booking.date + "T00:00:00").toLocaleDateString(
-                                "vi-VN"
-                              )
-                            : ""}
-                        </p>
-                        <p className="text-gray-600">Thời gian: {booking.time}</p>
-                        {booking.note && (
-                          <p className="text-gray-500 mt-1">
-                            Ghi chú: {booking.note}
-                          </p>
-                        )}
-                      </div>
-                      <span
-                        className={`px-4 py-2 rounded-full text-sm ${statusObj.className}`}
-                      >
-                        {statusObj.text}
-                      </span>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section> */}
-      {/* lịch đặt bàn */}
       <Outlet />
       <Footer />
     </div>
