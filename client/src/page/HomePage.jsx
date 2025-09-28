@@ -5,8 +5,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { appointmentService } from "../services/appointment.service";
 import { useAuth } from "../context/AuthContext";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import 'swiper/css';
 // import foods from "../data/foods";
 
 const HomePage = () => {
